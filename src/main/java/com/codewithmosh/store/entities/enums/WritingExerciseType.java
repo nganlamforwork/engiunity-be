@@ -1,5 +1,7 @@
 package com.codewithmosh.store.entities.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
@@ -53,6 +55,7 @@ public enum WritingExerciseType {
         this.title = title;
     }
 
+    @JsonValue
     public String getTitle() {
         return title;
     }
@@ -63,6 +66,7 @@ public enum WritingExerciseType {
      * @return the corresponding WritingExerciseType.
      * @throws IllegalArgumentException if no enum constant matches the given string.
      */
+    @JsonCreator
     public static WritingExerciseType fromString(String title) {
         for (WritingExerciseType type : WritingExerciseType.values()) {
             if (type.getTitle().equalsIgnoreCase(title)) {

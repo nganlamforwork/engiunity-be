@@ -1,4 +1,6 @@
 package com.codewithmosh.store.entities.enums;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Author: lamlevungan
@@ -8,7 +10,6 @@ package com.codewithmosh.store.entities.enums;
  */
 public enum Status {
 
-    // The status of the exercise
     DONE("Done"),
     IN_PROGRESS("In Progress"),
     NOT_STARTED("Not Started");
@@ -19,16 +20,12 @@ public enum Status {
         this.status = status;
     }
 
+    @JsonValue
     public String getStatus() {
         return status;
     }
 
-    /**
-     * Converts a string to the corresponding Status enum.
-     * @param status the string representation of the status.
-     * @return the corresponding Status enum.
-     * @throws IllegalArgumentException if no enum constant matches the given string.
-     */
+    @JsonCreator
     public static Status fromString(String status) {
         for (Status s : Status.values()) {
             if (s.getStatus().equalsIgnoreCase(status)) {

@@ -1,5 +1,8 @@
 package com.codewithmosh.store.entities.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Author: lamlevungan
  * Date: 27/04/2025
@@ -12,13 +15,6 @@ public enum ExerciseType {
  READING("Reading"),
  SPEAKING("Speaking"),
  LISTENING("Listening");
-// VOCABULARY("Vocabulary"),
-// IDIOMS("Idioms"),
-// GRAMMAR("Grammar"),
-// COMPREHENSION("Comprehension"),
-// TRANSLATION("Translation"),
-// PHRASAL_VERBS("Phrasal Verbs"),
-// SPELLING("Spelling");
 
  private final String exerciseType;
 
@@ -26,16 +22,12 @@ public enum ExerciseType {
   this.exerciseType = exerciseType;
  }
 
+ @JsonValue
  public String getExerciseType() {
   return exerciseType;
  }
 
- /**
-  * Converts a string to the corresponding ExerciseType enum.
-  * @param exerciseType the string representation of the exercise type.
-  * @return the corresponding ExerciseType enum.
-  * @throws IllegalArgumentException if no enum constant matches the given string.
-  */
+ @JsonCreator
  public static ExerciseType fromString(String exerciseType) {
   for (ExerciseType type : ExerciseType.values()) {
    if (type.getExerciseType().equalsIgnoreCase(exerciseType)) {

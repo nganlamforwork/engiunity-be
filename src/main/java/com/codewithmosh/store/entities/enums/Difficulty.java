@@ -1,4 +1,6 @@
 package com.codewithmosh.store.entities.enums;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Author: lamlevungan
@@ -27,16 +29,12 @@ public enum Difficulty {
         this.level = level;
     }
 
+    @JsonValue
     public String getLevel() {
         return level;
     }
 
-    /**
-     * Converts a string to the corresponding Difficulty enum.
-     * @param level the string representation of the difficulty level.
-     * @return the corresponding Difficulty enum.
-     * @throws IllegalArgumentException if no enum constant matches the given string.
-     */
+    @JsonCreator
     public static Difficulty fromString(String level) {
         for (Difficulty difficulty : Difficulty.values()) {
             if (difficulty.getLevel().equalsIgnoreCase(level)) {

@@ -4,6 +4,10 @@
  **/
 package com.codewithmosh.store.dtos.writing;
 
+import com.codewithmosh.store.entities.enums.CreationSource;
+import com.codewithmosh.store.entities.enums.Difficulty;
+import com.codewithmosh.store.entities.enums.WritingExerciseType;
+import com.codewithmosh.store.entities.enums.WritingPart;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -21,14 +25,14 @@ public class CreateExerciseManuallyRequest {
     private String thumbnail;
 
     @NotBlank(message = "Creation source is required")
-    private String creationSource;
+    private CreationSource creationSource;
 
     @NotBlank(message = "Part is required")
-    private String part;
+    private WritingPart part;
 
-    private String exerciseType;
+    private WritingExerciseType exerciseType;
 
-    private String difficulty;
+    private Difficulty difficulty;
 
     @NotBlank(message = "Content is required")
     private String content;
