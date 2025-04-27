@@ -11,7 +11,7 @@ CREATE TABLE writing_exercises
     title           VARCHAR(255)                      NOT NULL,
     description     VARCHAR(255) NULL,
     thumbnail       VARCHAR(255) NULL COMMENT 'Thumbnail src url from cdn',
-    creation_source BINARY(1) NOT NULL,
+    creation_source VARCHAR(50) NOT NULL,
     part            VARCHAR(50)                       NOT NULL,
     exercise_type   VARCHAR(50) NULL,
     difficulty      VARCHAR(50) NULL,

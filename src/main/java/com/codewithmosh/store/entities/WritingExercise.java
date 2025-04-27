@@ -1,5 +1,6 @@
 package com.codewithmosh.store.entities;
 
+import com.codewithmosh.store.entities.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -31,23 +32,24 @@ public class WritingExercise {
 
     @Column(name = "creation_source")
     @Enumerated(EnumType.STRING)
-    private String creationSource;
+    private CreationSource creationSource;
 
     @Column(name = "part")
     @Enumerated(EnumType.STRING)
-    private String part;
+    private WritingPart part;
 
     @Column(name = "exercise_type")
     @Enumerated(EnumType.STRING)
-    private String exerciseType;
+    private WritingExerciseType exerciseType;
 
     @Column(name = "difficulty")
     @Enumerated(EnumType.STRING)
-    private String difficulty;
+    private Difficulty difficulty;
 
+    @Builder.Default
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private String status;
+    private Status status = Status.NOT_STARTED;
 
     @Column(name = "score")
     private Float score;
@@ -57,4 +59,9 @@ public class WritingExercise {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "content")
+    private String content;
+
+    @Column(name = "image")
+    private String image;
 }

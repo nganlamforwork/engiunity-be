@@ -1,5 +1,6 @@
 package com.codewithmosh.store.entities;
 
+import com.codewithmosh.store.entities.enums.ExerciseType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class ExerciseTag {
     private Long id;
 
     @Column(name = "exercise_type")
-    private String exerciseType;
+    @Enumerated(EnumType.STRING)
+    private ExerciseType exerciseType;
 
 }
