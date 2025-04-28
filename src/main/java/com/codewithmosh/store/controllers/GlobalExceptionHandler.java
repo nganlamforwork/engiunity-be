@@ -10,6 +10,8 @@ import com.codewithmosh.store.exceptions.FileStorageException;
 import com.codewithmosh.store.exceptions.UserNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -60,14 +62,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    // General Exception
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneralException(Exception exception) {
-        var error = new HashMap<String, String>();
-        error.put("error", exception.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-
     // Json parsing from form data
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<Map<String, String>> handleJsonProcessingException(JsonProcessingException exception) {
@@ -93,5 +87,24 @@ public class GlobalExceptionHandler {
         errors.put("error", exception.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errors);
+    }
+
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
+        logger.error("Runtime exception occurred", ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An error occurred while processing your request: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleException(Exception ex) {
+        logger.error("Exception occurred", ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred: " + ex.getMessage()));
     }
 }

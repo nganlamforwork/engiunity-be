@@ -23,3 +23,11 @@ bunny:
     regionUrl: https://storage.bunnycdn.com
     accessKey: ${BUNNY_SECRET}
     pullZoneUrl: https://ielts-learning.b-cdn.net
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+  model: gpt-3.5-turbo
+  maxTokens: 4000
+  temperature: 0.7
+  timeout: 300

@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "properties": {
+    "overview": {
+      "type": "object",
+      "properties": {
+        "totalScore": { "type": "integer" },
+        "totalFeedback": { "type": "string" },
+        "overallImprovementSuggestion": { "type": "string" }
+      },
+      "required": ["totalScore", "totalFeedback", "overallImprovementSuggestion"]
+    },
+    "task_response": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer" },
+        "feedback": { "type": "string" },
+        "corrections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": { "type": "string" },
+              "start_position": { "type": "integer" },
+              "end_position": { "type": "integer" },
+              "suggestion": { "type": "string" }
+            },
+            "required": ["error", "start_position", "end_position", "suggestion"]
+          }
+        },
+        "improvementSuggestion": { "type": "string" }
+      },
+      "required": ["score", "feedback", "corrections", "improvementSuggestion"]
+    },
+    "coherence_and_cohesion": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer" },
+        "feedback": { "type": "string" },
+        "corrections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": { "type": "string" },
+              "start_position": { "type": "integer" },
+              "end_position": { "type": "integer" },
+              "suggestion": { "type": "string" }
+            },
+            "required": ["error", "start_position", "end_position", "suggestion"]
+          }
+        },
+        "improvementSuggestion": { "type": "string" }
+      },
+      "required": ["score", "feedback", "corrections", "improvementSuggestion"]
+    },
+    "lexical_resource": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer" },
+        "feedback": { "type": "string" },
+        "corrections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": { "type": "string" },
+              "start_position": { "type": "integer" },
+              "end_position": { "type": "integer" },
+              "suggestion": { "type": "string" }
+            },
+            "required": ["error", "start_position", "end_position", "suggestion"]
+          }
+        },
+        "improvementSuggestion": { "type": "string" }
+      },
+      "required": ["score", "feedback", "corrections", "improvementSuggestion"]
+    },
+    "grammatical_range_and_accuracy": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer" },
+        "feedback": { "type": "string" },
+        "corrections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": { "type": "string" },
+              "start_position": { "type": "integer" },
+              "end_position": { "type": "integer" },
+              "suggestion": { "type": "string" }
+            },
+            "required": ["error", "start_position", "end_position", "suggestion"]
+          }
+        },
+        "improvementSuggestion": { "type": "string" }
+      },
+      "required": ["score", "feedback", "corrections", "improvementSuggestion"]
+    }
+  },
+  "required": [
+    "overview",
+    "task_response",
+    "coherence_and_cohesion",
+    "lexical_resource",
+    "grammatical_range_and_accuracy"
+  ]
+}
