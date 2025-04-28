@@ -2,6 +2,8 @@ package com.codewithmosh.store.entities;
 
 import com.codewithmosh.store.entities.enums.ScoreStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -18,7 +20,6 @@ import java.util.Map;
 @Entity
 @Table(name = "writing_exercise_responses", schema = "enginuity")
 public class WritingExerciseResponse {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -37,21 +38,20 @@ public class WritingExerciseResponse {
     @Column(name = "taken_at")
     private Instant takenAt;
 
-    @ColumnDefault("1")
+    @Builder.Default
     @Column(name = "take_number")
-    private Integer takeNumber;
+    private Integer takeNumber = 1;
 
-    @ColumnDefault("0")
-    @Column(name = "score")
-    private Integer score;
+    @Builder.Default
+    @Column(name = "score", nullable = false)
+    private Integer score = 0;
 
     @Column(name = "score_detail")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> scoreDetail;
 
+    @Builder.Default
+    @Column(name = "score_status")
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'NOT_SCORED'")
-    @Column(name = "score_status", length = 50)
-    private ScoreStatus scoreStatus;
-
+    private ScoreStatus scoreStatus = ScoreStatus.NOT_SCORED;
 }

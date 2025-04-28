@@ -1,31 +1,29 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.cdn.BunnyCdnUploader;
-import com.codewithmosh.store.dtos.writing.CreateExerciseManuallyRequest;
-import com.codewithmosh.store.dtos.writing.WritingExerciseDto;
-import com.codewithmosh.store.dtos.writing.WritingExerciseSummaryDto;
+import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.entities.WritingExercise;
+import com.codewithmosh.store.entities.WritingExerciseResponse;
 import com.codewithmosh.store.entities.enums.CreationSource;
+import com.codewithmosh.store.entities.enums.Status;
 import com.codewithmosh.store.exceptions.ExerciseNotFoundException;
 import com.codewithmosh.store.exceptions.FileStorageException;
 import com.codewithmosh.store.exceptions.UserNotFoundException;
 import com.codewithmosh.store.mapppers.WritingExerciseMapper;
 import com.codewithmosh.store.repositories.UserRepository;
 import com.codewithmosh.store.repositories.WritingExerciseRepository;
+import com.codewithmosh.store.repositories.WritingExerciseResponseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class WritingExerciseService {
     private final WritingExerciseRepository writingExerciseRepository;
+    private final WritingExerciseResponseRepository writingExerciseResponseRepository;
     private final UserRepository userRepository;
     private final WritingExerciseMapper writingExerciseMapper;
     private final BunnyCdnUploader bunnyCdnUploader;
@@ -78,13 +76,72 @@ public class WritingExerciseService {
                 .toList();
     }
 
-    public WritingExerciseDto getExerciseById(Long id) {
-        Optional<WritingExercise> exercise = writingExerciseRepository.findById(id);
+    public WritingExerciseDto getExerciseById(Long id, Long userId) {
+        var user = userRepository.findById(userId).orElse(null);
+        if (user == null) throw new UserNotFoundException(userId);
+
+        Optional<WritingExercise> exercise = writingExerciseRepository.findByIdAndUserId(
+                id,
+                userId,
+                CreationSource.USER_CREATED,
+                CreationSource.AI_GENERATED,
+                CreationSource.SYSTEM_UPLOADED);
         if (!exercise.isPresent()) throw new ExerciseNotFoundException();
 
-        WritingExerciseDto writingExerciseDto = writingExerciseMapper.toDto(exercise.get());
+        WritingExerciseDto writingExerciseDto = writingExerciseMapper.toEntity(exercise.get());
 
         return writingExerciseDto;
+    }
+
+    public void createResponse(Long exerciseId, Long userId, WritingExerciseResponseRequest request) {
+        var user = userRepository.findById(userId).orElse(null);
+        if (user == null) throw new UserNotFoundException(userId);
+
+        Optional<WritingExercise> exerciseOptional = writingExerciseRepository.findByIdAndUserId(
+                exerciseId,
+                userId,
+                CreationSource.USER_CREATED,
+                CreationSource.AI_GENERATED,
+                CreationSource.SYSTEM_UPLOADED);
+        if (!exerciseOptional.isPresent()) throw new ExerciseNotFoundException();
+
+        WritingExercise exercise = exerciseOptional.get();
+
+        Integer maxTakenNumber = writingExerciseResponseRepository.findMaxTakeNumberByExerciseId(exerciseId);
+
+        int nextTakeNumber = (maxTakenNumber != null ? maxTakenNumber + 1 : 1);
+
+        WritingExerciseResponse writingExerciseResponse = writingExerciseMapper.toEntity(request);
+        writingExerciseResponse.setExercise(exercise);
+        writingExerciseResponse.setTakeNumber(nextTakeNumber);
+
+        writingExerciseResponseRepository.save(writingExerciseResponse);
+        if (exercise.getStatus() == null || exercise.getStatus() == Status.NOT_STARTED) {
+            exercise.setStatus(Status.IN_PROGRESS);
+            writingExerciseRepository.save(exercise);
+        }
+    }
+
+    public WritingExerciseResponseNotScoredDto getLatestNotScoredResponse(Long exerciseId, Long userId) {
+        var user = userRepository.findById(userId).orElse(null);
+        if (user == null) throw new UserNotFoundException(userId);
+
+        Optional<WritingExercise> exerciseOptional = writingExerciseRepository.findByIdAndUserId(
+                exerciseId,
+                userId,
+                CreationSource.USER_CREATED,
+                CreationSource.AI_GENERATED,
+                CreationSource.SYSTEM_UPLOADED);
+        if (!exerciseOptional.isPresent()) throw new ExerciseNotFoundException();
+
+        WritingExerciseResponse response = writingExerciseResponseRepository
+                .findLatestNotGradedResponseByExerciseId(exerciseId)
+                .orElse(null);
+        if (response == null) return null;
+
+        WritingExerciseResponseNotScoredDto responseDto = writingExerciseMapper.toNotScoredDto(response);
+
+        return responseDto;
     }
 }
 

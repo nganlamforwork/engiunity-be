@@ -1,9 +1,8 @@
 package com.codewithmosh.store.mapppers;
 
-import com.codewithmosh.store.dtos.writing.CreateExerciseManuallyRequest;
-import com.codewithmosh.store.dtos.writing.WritingExerciseDto;
-import com.codewithmosh.store.dtos.writing.WritingExerciseSummaryDto;
+import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.entities.WritingExercise;
+import com.codewithmosh.store.entities.WritingExerciseResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -16,7 +15,7 @@ public interface WritingExerciseMapper {
     WritingExercise toEntity(CreateExerciseManuallyRequest request, Long userId);
 
     @Mapping(target = "thumbnail", expression = "java(fillThumbnail(writingExercise))")
-    WritingExerciseDto toDto(WritingExercise writingExercise);
+    WritingExerciseDto toEntity(WritingExercise writingExercise);
 
     @Mapping(target = "thumbnail", expression = "java(fillThumbnail(writingExercise))")
     WritingExerciseSummaryDto toSummaryDto(WritingExercise writingExercise);
@@ -30,4 +29,9 @@ public interface WritingExerciseMapper {
             return null;
         }
     }
+
+    @Mapping(target = "takenAt", expression = "java(java.time.Instant.now())")
+    WritingExerciseResponse toEntity(WritingExerciseResponseRequest request);
+
+    WritingExerciseResponseNotScoredDto toNotScoredDto(WritingExerciseResponse response);
 }
