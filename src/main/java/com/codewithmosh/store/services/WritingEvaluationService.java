@@ -253,18 +253,22 @@ public class WritingEvaluationService {
                     "Coherence and Cohesion, Lexical Resource, and Grammatical Range and Accuracy. " +
                     "Each category must be scored from 1 to 9.\n\n" +
 
-                    "IMPORTANT: Keep feedback concise. Limit each feedback section to 2-3 sentences. " +
-                    "Limit each improvement suggestion to 1-2 sentences.\n\n" +
+                    "IMPORTANT: Keep feedback concise. Limit each feedback section to 2-3 sentences.\n\n" +
 
                     "When identifying mistakes, focus on major and representative errors only. " +
-                    "Do NOT list every minor mistake. Select key errors that best reflect common or serious issues.\n\n" +
+                    "For each scoring category (Task Response, Coherence and Cohesion, Lexical Resource, " +
+                    "Grammatical Range and Accuracy), list a maximum of 5 errors. " +
+                    "It is acceptable to list fewer than 5 if there are fewer errors or none at all.\n\n" +
 
-                    "If a particular type of error (e.g., verb tense, article usage, etc.) appears more than 5 times, " +
-                    "include a WARNING in the overall evaluation noting that there are frequent and significant problems " +
+                    "For each error, **directly provide the corrected version of the sentence or phrase**. " +
+                    "Do not give general suggestions or explanations. Provide only the corrected sentence, " +
+                    "as it would be written correctly.\n\n" +
+
+                    "If a particular type of language issue (e.g., verb tense, article usage) appears frequently, " +
+                    "include a WARNING in the overall evaluation noting that there are significant problems " +
                     "with that aspect of writing.\n\n" +
 
                     jsonSchemaService.createSchemaInstruction(schema);
-
 
             // Create the user prompt
             String prompt = "Task Description: " + taskDescription + "\n\n" +
