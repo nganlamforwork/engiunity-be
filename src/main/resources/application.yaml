@@ -17,3 +17,9 @@ spring:
     accessTokenExpiration: 60000
     refreshTokenExpiration: 604800000
 #    refreshTokenExpiration: 604800000
+bunny:
+  storage:
+    zoneName: ielts-learning
+    regionUrl: https://storage.bunnycdn.com
+    accessKey: ${BUNNY_SECRET}
+    pullZoneUrl: https://ielts-learning.b-cdn.net

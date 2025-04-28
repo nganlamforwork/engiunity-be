@@ -5,6 +5,7 @@
 package com.codewithmosh.store.controllers;
 
 import com.codewithmosh.store.exceptions.DirectoryCreationException;
+import com.codewithmosh.store.exceptions.ExerciseNotFoundException;
 import com.codewithmosh.store.exceptions.FileStorageException;
 import com.codewithmosh.store.exceptions.UserNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
         var errors = new HashMap<String, String>();
 
         exception.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), "Test"+error.getDefaultMessage());
+            errors.put(error.getField(),error.getDefaultMessage());
         });
 
         return ResponseEntity.badRequest().body(errors);
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
     // User not found
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException exception) {
+        var error = new HashMap<String, String>();
+        error.put("error", exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    // User not found
+    @ExceptionHandler(ExerciseNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleExerciseNotFoundException(ExerciseNotFoundException exception) {
         var error = new HashMap<String, String>();
         error.put("error", exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);

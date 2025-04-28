@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Author: lamlevungan
@@ -22,4 +23,6 @@ public interface WritingExerciseRepository extends JpaRepository<WritingExercise
             CreationSource userCreated,
             CreationSource aiGenerated,
             CreationSource systemUploaded);
+
+    Optional<WritingExercise> findById(Long id);
 }

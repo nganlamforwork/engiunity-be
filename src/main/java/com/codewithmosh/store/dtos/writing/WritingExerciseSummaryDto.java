@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WritingExerciseDto {
+public class WritingExerciseSummaryDto {
     private Long id;
     private String title;
     private String description;
@@ -19,6 +19,4 @@ public class WritingExerciseDto {
     private Difficulty difficulty;
     private Status status;
     private Float score;
-    private String content;
-    private String image;
 }
