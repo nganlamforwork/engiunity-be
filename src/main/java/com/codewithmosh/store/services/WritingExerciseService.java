@@ -83,6 +83,7 @@ public class WritingExerciseService {
         if (!exercise.isPresent()) throw new ExerciseNotFoundException();
 
         WritingExerciseDto writingExerciseDto = writingExerciseMapper.toDto(exercise.get());
+
         return writingExerciseDto;
     }
 }
