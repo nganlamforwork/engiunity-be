@@ -6,11 +6,12 @@ package com.codewithmosh.store.dtos.writing;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class WritingExerciseResponseNotScoredDto {
+    private Integer id;
     private String content;
 }

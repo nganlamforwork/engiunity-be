@@ -2,10 +2,10 @@ package com.codewithmosh.store.entities;
 
 import com.codewithmosh.store.entities.enums.ScoreStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
@@ -19,6 +19,7 @@ import java.util.Map;
 @Setter
 @Entity
 @Table(name = "writing_exercise_responses", schema = "enginuity")
+@ToString()
 public class WritingExerciseResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +45,7 @@ public class WritingExerciseResponse {
 
     @Builder.Default
     @Column(name = "score", nullable = false)
-    private Integer score = 0;
+    private Float score = 0.0F;
 
     @Column(name = "score_detail")
     @JdbcTypeCode(SqlTypes.JSON)

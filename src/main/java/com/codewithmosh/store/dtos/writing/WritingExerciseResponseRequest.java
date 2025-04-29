@@ -9,6 +9,8 @@ import lombok.Data;
 
 @Data
 public class WritingExerciseResponseRequest {
+    private Long id;
+
     @NotBlank(message = "Content is required")
     private String content;
 }

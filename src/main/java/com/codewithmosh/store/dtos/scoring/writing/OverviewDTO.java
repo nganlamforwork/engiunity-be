@@ -11,7 +11,7 @@ import lombok.Data;
 public class OverviewDTO {
 
     @JsonProperty("totalScore")
-    private Integer totalScore;
+    private Float totalScore;
 
     @JsonProperty("totalFeedback")
     private String totalFeedback;

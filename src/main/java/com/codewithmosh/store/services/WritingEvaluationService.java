@@ -5,7 +5,6 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.dtos.ai.TokenUsageDTO;
-import com.codewithmosh.store.dtos.ai.UsageDTO;
 import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +12,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class WritingEvaluationService {
                 "overview": {
                   "type": "object",
                   "properties": {
-                    "totalScore": { "type": "integer" },
+                    "totalScore": { "type": "float" },
                     "totalFeedback": { "type": "string" },
                     "overallImprovementSuggestion": { "type": "string" }
                   },
@@ -62,7 +64,7 @@ public class WritingEvaluationService {
                 "task_response": {
                   "type": "object",
                   "properties": {
-                    "score": { "type": "integer" },
+                    "score": { "type": "float" },
                     "feedback": { "type": "string" },
                     "corrections": {
                       "type": "array",
@@ -84,7 +86,7 @@ public class WritingEvaluationService {
                 "coherence_and_cohesion": {
                   "type": "object",
                   "properties": {
-                    "score": { "type": "integer" },
+                    "score": { "type": "float" },
                     "feedback": { "type": "string" },
                     "corrections": {
                       "type": "array",
@@ -106,7 +108,7 @@ public class WritingEvaluationService {
                 "lexical_resource": {
                   "type": "object",
                   "properties": {
-                    "score": { "type": "integer" },
+                    "score": { "type": "float" },
                     "feedback": { "type": "string" },
                     "corrections": {
                       "type": "array",
@@ -128,7 +130,7 @@ public class WritingEvaluationService {
                 "grammatical_range_and_accuracy": {
                   "type": "object",
                   "properties": {
-                    "score": { "type": "integer" },
+                    "score": { "type": "float" },
                     "feedback": { "type": "string" },
                     "corrections": {
                       "type": "array",
@@ -176,13 +178,25 @@ public class WritingEvaluationService {
             JsonNode schema = jsonSchemaService.parseSchema(writingEvaluationSchema);
 
             // Tạo hướng dẫn hệ thống với giới hạn độ dài rõ ràng
-            String systemInstruction = "You are an expert writing evaluator for academic English tests. " +
-                    "Evaluate the writing sample according to the IELTS scoring criteria: Task Response, " +
-                    "Coherence and Cohesion, Lexical Resource, and Grammatical Range and Accuracy. " +
-                    "Each category should be scored from 1 to 9.\n\n" +
-                    "IMPORTANT: Keep your feedback concise. Limit each feedback section to 2-3 sentences. " +
-                    "Limit each improvement suggestion to 1-2 sentences. " +
-                    "For corrections, identify no more than 3 key issues per category.\n\n" +
+            String systemInstruction = "You are an expert writing evaluator for academic English tests.\n" +
+                    "Evaluate the writing sample using the IELTS scoring criteria: Task Response, Coherence and Cohesion, " +
+                    "Lexical Resource, and Grammatical Range and Accuracy. Give a band score (1–9) for each category, rounded to the nearest 0.5.\n\n" +
+
+                    "Each feedback section must contain **2 to 5 sentences only**. Avoid vague or general comments.\n" +
+                    "Focus on meaningful, representative errors that affect the quality of writing.\n\n" +
+
+                    "For each category:\n" +
+                    "- Identify up to 5 specific language errors (if present).\n" +
+                    "- For each error, provide the **exact corrected version** of the sentence or phrase.\n" +
+                    "- Do NOT explain grammar rules or give abstract advice (e.g., 'improve vocabulary usage').\n" +
+                    "- Always show how to rewrite the mistake correctly.\n\n" +
+
+                    "If a particular type of issue (e.g., verb tense, article misuse, word repetition) appears repeatedly, " +
+                    "add a **WARNING** at the end of that section, highlighting the pattern.\n\n" +
+
+                    "Your goal is to provide practical, direct corrections. If there are no notable errors in a category, " +
+                    "briefly state that. Do not exceed 5 sentences per section.\n\n" +
+
                     jsonSchemaService.createSchemaInstruction(schema);
 
             // Create the user prompt
@@ -248,25 +262,24 @@ public class WritingEvaluationService {
             JsonNode schema = jsonSchemaService.parseSchema(customSchema);
 
             // Create system instructions with clear length limits
-            String systemInstruction = "You are an expert writing evaluator for academic English tests. " +
-                    "Evaluate the writing sample according to the IELTS scoring criteria: Task Response, " +
-                    "Coherence and Cohesion, Lexical Resource, and Grammatical Range and Accuracy. " +
-                    "Each category must be scored from 1 to 9.\n\n" +
+            String systemInstruction = "You are an expert writing evaluator for academic English tests.\n" +
+                    "Evaluate the writing sample using the IELTS scoring criteria: Task Response, Coherence and Cohesion, " +
+                    "Lexical Resource, and Grammatical Range and Accuracy. Give a band score (1–9) for each category, rounded to the nearest 0.5.\n\n" +
 
-                    "IMPORTANT: Keep feedback concise. Limit each feedback section to 2-3 sentences.\n\n" +
+                    "Each feedback section must contain **2 to 5 sentences only**. Avoid vague or general comments.\n" +
+                    "Focus on meaningful, representative errors that affect the quality of writing.\n\n" +
 
-                    "When identifying mistakes, focus on major and representative errors only. " +
-                    "For each scoring category (Task Response, Coherence and Cohesion, Lexical Resource, " +
-                    "Grammatical Range and Accuracy), list a maximum of 5 errors. " +
-                    "It is acceptable to list fewer than 5 if there are fewer errors or none at all.\n\n" +
+                    "For each category:\n" +
+                    "- Identify up to 5 specific language errors (if present).\n" +
+                    "- For each error, provide the **exact corrected version** of the sentence or phrase.\n" +
+                    "- Do NOT explain grammar rules or give abstract advice (e.g., 'improve vocabulary usage').\n" +
+                    "- Always show how to rewrite the mistake correctly.\n\n" +
 
-                    "For each error, **directly provide the corrected version of the sentence or phrase**. " +
-                    "Do not give general suggestions or explanations. Provide only the corrected sentence, " +
-                    "as it would be written correctly.\n\n" +
+                    "If a particular type of issue (e.g., verb tense, article misuse, word repetition) appears repeatedly, " +
+                    "add a **WARNING** at the end of that section, highlighting the pattern.\n\n" +
 
-                    "If a particular type of language issue (e.g., verb tense, article usage) appears frequently, " +
-                    "include a WARNING in the overall evaluation noting that there are significant problems " +
-                    "with that aspect of writing.\n\n" +
+                    "Your goal is to provide practical, direct corrections. If there are no notable errors in a category, " +
+                    "briefly state that. Do not exceed 5 sentences per section.\n\n" +
 
                     jsonSchemaService.createSchemaInstruction(schema);
 

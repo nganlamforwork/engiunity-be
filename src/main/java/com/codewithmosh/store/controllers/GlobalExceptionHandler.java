@@ -4,10 +4,7 @@
  **/
 package com.codewithmosh.store.controllers;
 
-import com.codewithmosh.store.exceptions.DirectoryCreationException;
-import com.codewithmosh.store.exceptions.ExerciseNotFoundException;
-import com.codewithmosh.store.exceptions.FileStorageException;
-import com.codewithmosh.store.exceptions.UserNotFoundException;
+import com.codewithmosh.store.exceptions.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -50,15 +47,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException exception) {
         var error = new HashMap<String, String>();
-        error.put("error", exception.getMessage());
+        error.put("error", "User not found.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    // User not found
+    // Exercise not found
     @ExceptionHandler(ExerciseNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleExerciseNotFoundException(ExerciseNotFoundException exception) {
         var error = new HashMap<String, String>();
-        error.put("error", exception.getMessage());
+        error.put("error", "Exercise not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    // Exercise not found
+    @ExceptionHandler(ResponseNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleResponseNotFoundException(ResponseNotFoundException exception) {
+        var error = new HashMap<String, String>();
+        error.put("error", "Response not found.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 

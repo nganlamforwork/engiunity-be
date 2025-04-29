@@ -1,5 +1,6 @@
 package com.codewithmosh.store.controllers;
 
+import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDTO;
 import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.services.WritingExerciseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +30,7 @@ public class WritingExerciseController {
         // Parse JSON String -> CreateExerciseManuallyRequest
         CreateExerciseManuallyRequest request = objectMapper.readValue(data, CreateExerciseManuallyRequest.class);
 
-        System.out.println(request);
+//        System.out.println(request);
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
 
@@ -69,6 +70,18 @@ public class WritingExerciseController {
         writingExerciseService.createResponse(id, userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body("Response submitted successfully.");
     }
+
+    @PostMapping("/{id}/responses/submit")
+    public ResponseEntity<String> submitResponse(@PathVariable Long id,
+                                                 @RequestBody WritingExerciseResponseRequest request) {
+//        System.out.println(request.getId());
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+
+        writingExerciseService.submitResponse(id, userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Response submitted successfully.");
+    }
+
 
     @GetMapping("/{id}/responses/latest")
     public ResponseEntity<WritingExerciseResponseNotScoredDto> getLatestNotScoredResponse(@PathVariable Long id) {
