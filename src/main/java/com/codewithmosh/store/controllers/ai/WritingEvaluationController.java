@@ -4,7 +4,7 @@
  **/
 package com.codewithmosh.store.controllers.ai;
 
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDTO;
+import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDto;
 import com.codewithmosh.store.services.WritingEvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +27,11 @@ public class WritingEvaluationController {
     }
 
     @PostMapping("/evaluate")
-    public ResponseEntity<WritingEvaluationDTO> evaluateWriting(@RequestBody Map<String, String> request) {
+    public ResponseEntity<WritingEvaluationDto> evaluateWriting(@RequestBody Map<String, String> request) {
         String writingSample = request.get("writingSample");
         String taskDescription = request.get("taskDescription");
 
-        WritingEvaluationDTO evaluation = writingEvaluationService.evaluateWriting(writingSample, taskDescription);
+        WritingEvaluationDto evaluation = writingEvaluationService.evaluateWriting(writingSample, taskDescription);
 
         return ResponseEntity.ok(evaluation);
     }

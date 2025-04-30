@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CorrectionDTO {
+public class CorrectionDto {
 
     @JsonProperty("error")
     private String error;

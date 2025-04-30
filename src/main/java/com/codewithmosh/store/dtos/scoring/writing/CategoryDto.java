@@ -10,7 +10,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CategoryDTO {
+public class CategoryDto {
 
     @JsonProperty("score")
     private Integer score;
@@ -19,7 +19,7 @@ public class CategoryDTO {
     private String feedback;
 
     @JsonProperty("corrections")
-    private List<CorrectionDTO> corrections;
+    private List<CorrectionDto> corrections;
 
     @JsonProperty("improvementSuggestion")
     private String improvementSuggestion;
@@ -41,11 +41,11 @@ public class CategoryDTO {
         this.feedback = feedback;
     }
 
-    public List<CorrectionDTO> getCorrections() {
+    public List<CorrectionDto> getCorrections() {
         return corrections;
     }
 
-    public void setCorrections(List<CorrectionDTO> corrections) {
+    public void setCorrections(List<CorrectionDto> corrections) {
         this.corrections = corrections;
     }
 

@@ -1,6 +1,5 @@
 package com.codewithmosh.store.controllers;
 
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDTO;
 import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.services.WritingExerciseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -80,6 +79,16 @@ public class WritingExerciseController {
 
         writingExerciseService.submitResponse(id, userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body("Response submitted successfully.");
+    }
+
+    @GetMapping("/{id}/responses")
+    public ResponseEntity<WritingExerciseSubmissionsDto> getAllSubmissions(@PathVariable Long id){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+
+        WritingExerciseSubmissionsDto writingExerciseSubmissionsDto = writingExerciseService.getAllSubmissions(id, userId);
+        System.out.println(writingExerciseSubmissionsDto);
+        return ResponseEntity.ok(writingExerciseSubmissionsDto);
     }
 
 

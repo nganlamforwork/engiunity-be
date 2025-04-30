@@ -5,14 +5,13 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.dtos.ai.TokenUsageDTO;
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDTO;
+import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
-import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,7 +167,7 @@ public class WritingEvaluationService {
     /**
      * Evaluate a writing sample using the predefined schema
      */
-    public WritingEvaluationDTO evaluateWriting(String writingSample, String taskDescription) {
+    public WritingEvaluationDto evaluateWriting(String writingSample, String taskDescription) {
         try {
             logger.info("Evaluating writing sample");
 
@@ -230,7 +227,7 @@ public class WritingEvaluationService {
             content = ensureValidJson(content);
 
             // Parse the response into the DTO
-            WritingEvaluationDTO evaluationDTO = objectMapper.readValue(content, WritingEvaluationDTO.class);
+            WritingEvaluationDto evaluationDTO = objectMapper.readValue(content, WritingEvaluationDto.class);
 
             // Set the model used
             evaluationDTO.setModel(defaultModel);

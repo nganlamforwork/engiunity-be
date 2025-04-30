@@ -10,22 +10,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class WritingEvaluationDTO implements ResponseDTO {
+public class WritingEvaluationDto implements ResponseDTO {
 
     @JsonProperty("overview")
-    private OverviewDTO overview;
+    private OverviewDto overview;
 
     @JsonProperty("task_response")
-    private CategoryDTO taskResponse;
+    private CategoryDto taskResponse;
 
     @JsonProperty("coherence_and_cohesion")
-    private CategoryDTO coherenceAndCohesion;
+    private CategoryDto coherenceAndCohesion;
 
     @JsonProperty("lexical_resource")
-    private CategoryDTO lexicalResource;
+    private CategoryDto lexicalResource;
 
     @JsonProperty("grammatical_range_and_accuracy")
-    private CategoryDTO grammaticalRangeAndAccuracy;
+    private CategoryDto grammaticalRangeAndAccuracy;
 
     @JsonProperty("model")
     private String model;

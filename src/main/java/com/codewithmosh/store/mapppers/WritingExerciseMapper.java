@@ -20,6 +20,8 @@ public interface WritingExerciseMapper {
     @Mapping(target = "thumbnail", expression = "java(fillThumbnail(writingExercise))")
     WritingExerciseSummaryDto toSummaryDto(WritingExercise writingExercise);
 
+    WritingExerciseDto toDto(WritingExercise writingExercise);
+
     default String fillThumbnail(WritingExercise exercise) {
         if (exercise.getThumbnail() != null && !exercise.getThumbnail().isEmpty()) {
             return exercise.getThumbnail();
@@ -34,4 +36,6 @@ public interface WritingExerciseMapper {
     WritingExerciseResponse toEntity(WritingExerciseResponseRequest request);
 
     WritingExerciseResponseNotScoredDto toNotScoredDto(WritingExerciseResponse response);
+
+    WritingExerciseResponseDto toDto (WritingExerciseResponse response);
 }

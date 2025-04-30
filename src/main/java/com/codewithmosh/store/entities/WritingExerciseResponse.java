@@ -1,6 +1,7 @@
 package com.codewithmosh.store.entities;
 
 import com.codewithmosh.store.entities.enums.ScoreStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class WritingExerciseResponse {
     @Column(name = "id")
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "exercise_id")

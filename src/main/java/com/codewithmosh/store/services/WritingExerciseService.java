@@ -1,7 +1,7 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.cdn.BunnyCdnUploader;
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDTO;
+import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDto;
 import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.entities.WritingExercise;
 import com.codewithmosh.store.entities.WritingExerciseResponse;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -153,7 +154,7 @@ public class WritingExerciseService {
         return responseDto;
     }
 
-    public WritingEvaluationDTO submitResponse(Long exerciseId, Long userId, WritingExerciseResponseRequest request) {
+    public WritingEvaluationDto submitResponse(Long exerciseId, Long userId, WritingExerciseResponseRequest request) {
 //        var user = userRepository.findById(userId).orElse(null);
 //        if (user == null) throw new UserNotFoundException(userId);
 
@@ -188,7 +189,7 @@ public class WritingExerciseService {
             response.setTakeNumber(nextTakeNumber);
 
         }
-        WritingEvaluationDTO result = writingEvaluationService.evaluateWriting(response.getContent(), exerciseOptional.get().getContent());
+        WritingEvaluationDto result = writingEvaluationService.evaluateWriting(response.getContent(), exerciseOptional.get().getContent());
 
         // Set score & taken time
         response.setScore(result.getOverview().getTotalScore());
@@ -205,6 +206,26 @@ public class WritingExerciseService {
         writingExerciseRepository.save(exercise);
 
         return result;
+    }
+
+    public WritingExerciseSubmissionsDto getAllSubmissions(Long exerciseId, Long userId) {
+        Optional<WritingExercise> exerciseOptional = writingExerciseRepository.findByIdAndUserId(
+                exerciseId,
+                userId,
+                CreationSource.USER_CREATED,
+                CreationSource.AI_GENERATED,
+                CreationSource.SYSTEM_UPLOADED);
+        if (!exerciseOptional.isPresent()) throw new ExerciseNotFoundException();
+//        System.out.println(exerciseOptional.get());
+        List<WritingExerciseResponse> responses = writingExerciseResponseRepository.findAllByExercise_Id(exerciseOptional.get().getId());
+//        System.out.println("responses");
+//        System.out.println(responses);
+        List<WritingExerciseResponseDto> responsesDtos = responses.stream()
+                .map(writingExerciseMapper::toDto)
+                .toList();
+        WritingExerciseSubmissionsDto submissions = new WritingExerciseSubmissionsDto(writingExerciseMapper.toDto(exerciseOptional.get()), responsesDtos);
+
+        return submissions;
     }
 }
 

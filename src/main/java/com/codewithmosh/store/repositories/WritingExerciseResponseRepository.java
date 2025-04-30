@@ -4,7 +4,6 @@
  **/
 package com.codewithmosh.store.repositories;
 
-import com.codewithmosh.store.entities.User;
 import com.codewithmosh.store.entities.WritingExerciseResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface WritingExerciseResponseRepository  extends JpaRepository<WritingExerciseResponse, Integer> {
@@ -32,4 +32,6 @@ public interface WritingExerciseResponseRepository  extends JpaRepository<Writin
     );
 
     Optional<WritingExerciseResponse> findById(Long id);
+
+    List<WritingExerciseResponse> findAllByExercise_Id(Long exerciseId);
 }
