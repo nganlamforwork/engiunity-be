@@ -5,6 +5,7 @@
 package com.codewithmosh.store.services.ai;
 
 import com.codewithmosh.store.dtos.ai.*;
+import com.codewithmosh.store.services.vocabulary.ResponseParserService;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;

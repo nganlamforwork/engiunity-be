@@ -1,4 +1,4 @@
-package com.codewithmosh.store.mapppers;
+package com.codewithmosh.store.mappers;
 
 import com.codewithmosh.store.dtos.RegisterUserRequest;
 import com.codewithmosh.store.dtos.UpdateUserRequest;

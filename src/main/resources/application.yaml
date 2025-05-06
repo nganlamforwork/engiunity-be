@@ -4,17 +4,17 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/enginuity?createDatabaseIfNotExist=true
     username: root
-    password: 21042003
+    password: admin
   flyway:
     enabled:  true
     url: jdbc:mysql://localhost:3306/enginuity?createDatabaseIfNotExist=true
     user: root
-    password: 21042003
+    password: admin
   jpa:
     show-sql: true
   jwt:
     secret: ${JWT_SECRET}
-    accessTokenExpiration: 600000
+    accessTokenExpiration: 600000000
     refreshTokenExpiration: 604800000
 #    refreshTokenExpiration: 604800000
 bunny:

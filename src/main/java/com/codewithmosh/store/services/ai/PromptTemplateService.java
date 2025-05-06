@@ -24,7 +24,26 @@ public class PromptTemplateService {
     }
 
     private void initializeTemplates() {
-        // Add some common templates
+        templates.put("generate_vocabulary",new PromptTemplate(
+                "Generate {{word_count}} vocabulary words for the topic \"{{topic}}\" at CEFR level {{level}}. " +
+                        "For each word, provide the word itself, its type (noun, verb, adjective, etc.), " +
+                        "the CEFR level, a list of 2-3 synonyms, and an example sentence with the word highlighted using ** (asterisks)."
+        ));
+
+        // Template for generating paragraphs with vocabulary words
+        templates.put("generate_paragraph",new PromptTemplate(
+                "Generate a coherent paragraph about \"{{topic}}\" using the following vocabulary words: {{word_list}}. " +
+                        "Highlight each vocabulary word using ** (asterisks) when it appears in the paragraph."
+        ));
+
+        // Template for generating feedback on writing
+        templates.put("generate_feedback",new PromptTemplate(
+                "Provide feedback on this language learner's writing about \"{{topic}}\" at CEFR level {{level}}. " +
+                        "The writing should use these vocabulary words: {{word_list}}.\n\n" +
+                        "Here is the learner's writing:\n\"{{user_writing}}\"\n\n" +
+                        "Also provide an improved version of the text that maintains the same ideas but uses the vocabulary words more effectively."
+        ));
+
         templates.put("summarize", new PromptTemplate(
                 "Summarize the following text in {{length}} sentences:\n\n{{text}}"
         ));
@@ -37,6 +56,7 @@ public class PromptTemplateService {
                 "Explain {{concept}} in simple terms that a {{audience}} would understand."
         ));
     }
+
 
     /**
      * Get a template by name

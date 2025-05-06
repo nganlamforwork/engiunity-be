@@ -1,4 +1,4 @@
-package com.codewithmosh.store.mapppers;
+package com.codewithmosh.store.mappers;
 
 import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.entities.WritingExercise;
@@ -6,10 +6,6 @@ import com.codewithmosh.store.entities.WritingExerciseResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-/**
- * Author: lamlevungan
- * Date: 27/04/2025
- **/
 @Mapper(componentModel = "spring")
 public interface WritingExerciseMapper {
     WritingExercise toEntity(CreateExerciseManuallyRequest request, Long userId);

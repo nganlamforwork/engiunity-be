@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class WritingEvaluationService {
+public class  WritingEvaluationService {
 
     private static final Logger logger = LoggerFactory.getLogger(WritingEvaluationService.class);
     private final OpenAiService openAiService;
@@ -219,6 +219,8 @@ public class WritingEvaluationService {
 
             // Get the response content
             String content = result.getChoices().get(0).getMessage().getContent();
+            System.out.println(content);
+
 
             // Extract JSON content if wrapped in markdown code blocks
             content = extractJsonContent(content);

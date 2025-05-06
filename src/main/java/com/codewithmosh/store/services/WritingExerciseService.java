@@ -11,7 +11,7 @@ import com.codewithmosh.store.entities.enums.Status;
 import com.codewithmosh.store.exceptions.ExerciseNotFoundException;
 import com.codewithmosh.store.exceptions.FileStorageException;
 import com.codewithmosh.store.exceptions.UserNotFoundException;
-import com.codewithmosh.store.mapppers.WritingExerciseMapper;
+import com.codewithmosh.store.mappers.WritingExerciseMapper;
 import com.codewithmosh.store.repositories.UserRepository;
 import com.codewithmosh.store.repositories.WritingExerciseRepository;
 import com.codewithmosh.store.repositories.WritingExerciseResponseRepository;

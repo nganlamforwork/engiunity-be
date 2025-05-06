@@ -62,9 +62,10 @@
             <groupId>org.flywaydb</groupId>
         </dependency>
         <dependency>
-            <artifactId>lombok</artifactId>
             <groupId>org.projectlombok</groupId>
-            <scope>annotationProcessor</scope>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -150,7 +151,7 @@
                 <configuration>
                     <url>jdbc:mysql://localhost:3306/enginuity?createDatabaseIfNotExist=true</url>
                     <user>root</user>
-                    <password>21042003</password>
+                    <password>admin</password>
                     <cleanDisabled>false</cleanDisabled>
                 </configuration>
             </plugin>
