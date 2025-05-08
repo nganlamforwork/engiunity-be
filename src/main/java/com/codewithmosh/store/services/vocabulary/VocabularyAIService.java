@@ -76,12 +76,12 @@ public class VocabularyAIService {
             "type": "string",
             "description": "Example sentence using the word"
           },
-          "vietnamese_translation": {
+          "vietnameseTranslation": {
             "type": "string",
             "description": "Vietnamese translation of provided words"
           }
         },
-        "required": ["word", "ipa", "type", "level", "synonyms", "example", "vietnamese_translation"]
+        "required": ["word", "ipa", "type", "level", "synonyms", "example", "vietnameseTranslation"]
       }
     }
   },
@@ -159,7 +159,7 @@ public class VocabularyAIService {
 
             // Create system instructions
             String systemInstruction = "You are an IELTS language learning assistant. " +
-                    "Create a natural-sounding paragraph that incorporates all the provided vocabulary words. " +
+                    "Create a natural-sounding paragraph about 1000 words that incorporates all the provided vocabulary words. " +
                     "Highlight each vocabulary word using ** (asterisks) when it appears in the paragraph. " +
                     "The paragraph should be appropriate for the topic and educational in nature.";
 
@@ -222,11 +222,14 @@ public class VocabularyAIService {
             // Create system instructions
             String systemInstruction = "You are an IELTS language learning assistant. " +
                     "Provide constructive feedback on the learner's writing, as detailed as possible but not exceed " +
-                    "1000 words in total response, " +
+                    "1500 words in total response, " +
                     "focusing on" +
                     "vocabulary usage, grammar, " +
                     "and coherence. " +
-                    "Then provide an improved version of the text that maintains the same ideas but uses the vocabulary words more effectively. " +
+                    "Then provide an improved version of the text, must use the original writing and improve, not cut" +
+                    " off and must maintains the same ideas but " +
+                    "uses the " +
+                    "vocabulary words more effectively. " +
                     "Your response should be in JSON format with \"feedback\" and \"improvedAnswer\" fields.\n\n" +
                     jsonSchemaService.createSchemaInstruction(schema);
 

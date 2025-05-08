@@ -1,6 +1,8 @@
 package com.codewithmosh.store.controllers.ai;
 
 import com.codewithmosh.store.dtos.vocabulary.*;
+import com.codewithmosh.store.entities.Session;
+import com.codewithmosh.store.mappers.SessionMapper;
 import com.codewithmosh.store.repositories.UserRepository;
 import com.codewithmosh.store.repositories.VocabularyRepository;
 import com.codewithmosh.store.services.vocabulary.VocabularyAIService;
@@ -8,10 +10,7 @@ import com.codewithmosh.store.services.vocabulary.VocabularyService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -24,16 +23,28 @@ public class VocabularyAIController {
     private final VocabularyService vocabularyService;
     private final VocabularyRepository vocabularyRepository;
     private final UserRepository userRepository;
+    private final SessionMapper sessionMapper;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createSession(@RequestBody CreateSessionRequest request) {
+    @PostMapping("/create-session")
+    public ResponseEntity<SessionDto> createSession(@RequestBody CreateSessionRequest request) {
         Long userId = request.getUserId();
-
-        vocabularyService.createSession(userId);
-        return ResponseEntity.ok().build();
+        Session session = vocabularyService.createSession(userId);
+        return ResponseEntity.ok(sessionMapper.toDto(session));
     }
 
-    @PostMapping("/hunt")
+    @GetMapping("/get-sessions")
+    public ResponseEntity<GetSessionsDto> getAllSessions(@RequestParam Long userId) {
+        GetSessionsDto sessions = vocabularyService.getAllSessions(userId);
+        return ResponseEntity.ok(sessions);
+    }
+
+    @GetMapping("/get-vocabularies")
+    public ResponseEntity<GetAllVocabularyDto> getAllVocabularies(@RequestParam Long userId) {
+        GetAllVocabularyDto vocabularies = vocabularyService.getAllVocabularies(userId);
+        return ResponseEntity.ok(vocabularies);
+    }
+
+    @PostMapping("/vocabulary-hunt")
     public ResponseEntity<VocabularyHuntDto> generateVocabularyWords(@RequestBody VocabularyHuntRequest request) {
         String topic = request.getTopic();
         String level = request.getLevel();
@@ -51,7 +62,7 @@ public class VocabularyAIController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/paragraph")
+    @PostMapping("/paragraph-generate")
     public ResponseEntity<ParagraphDto> generateParagraph(@RequestBody ParagraphRequest request) {
         Long sessionId = request.getSessionId();
 
@@ -59,18 +70,24 @@ public class VocabularyAIController {
         return ResponseEntity.ok(paragraph);
     }
 
-    @PostMapping("/reading")
+    @PostMapping("/reading-mode")
     public ResponseEntity<?> generateFeedback(@RequestBody ReadingRequest request) {
         vocabularyService.readingPractice(request.getSessionId());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/feedback")
+    @PostMapping("/feedback-generate")
     public ResponseEntity<FeedbackDto> generateFeedback(@RequestBody FeedbackRequest request) {
         Long sessionId = request.getSessionId();
         String writing = request.getWriting();
 
         FeedbackDto paragraph = vocabularyService.generateAndSaveFeedback(sessionId, writing);
         return ResponseEntity.ok(paragraph);
+    }
+
+    @GetMapping("/session")
+    public ResponseEntity<SessionDetailDto> getSessionDetails(@RequestParam Long sessionId) {
+        SessionDetailDto sessionDetails = vocabularyService.getSessionDetails(sessionId);
+        return ResponseEntity.ok(sessionDetails);
     }
 }

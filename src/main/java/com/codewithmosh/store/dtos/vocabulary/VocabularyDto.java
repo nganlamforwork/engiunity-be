@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class VocabularyDto {
-    private Long id;
     private String word;
     private String ipa;
     private String type;
@@ -16,5 +15,4 @@ public class VocabularyDto {
     private List<String> synonyms;
     private String example;
     private String vietnameseTranslation;
-    private Long sessionId;
 }

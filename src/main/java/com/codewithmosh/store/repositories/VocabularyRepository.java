@@ -15,4 +15,7 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
 
     @Query("SELECT v.word FROM Vocabulary v JOIN v.session s WHERE s.userId = :userId")
     Set<String> findAllWordsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT v FROM Vocabulary v WHERE v.session.userId = :userId")
+    List<Vocabulary> findAllByUserId(Long userId);
 }

@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 public class VocabularyHuntDto implements ResponseDTO {
     @JsonProperty("data")
-    private List<VocabularyItemDto> data;
+    private List<VocabularyDto> data;
 }
 

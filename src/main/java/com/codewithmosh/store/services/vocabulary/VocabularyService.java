@@ -1,9 +1,6 @@
 package com.codewithmosh.store.services.vocabulary;
 
-import com.codewithmosh.store.dtos.vocabulary.FeedbackDto;
-import com.codewithmosh.store.dtos.vocabulary.ParagraphDto;
-import com.codewithmosh.store.dtos.vocabulary.VocabularyAIResponseDto;
-import com.codewithmosh.store.dtos.vocabulary.VocabularyItemDto;
+import com.codewithmosh.store.dtos.vocabulary.*;
 import com.codewithmosh.store.entities.Feedback;
 import com.codewithmosh.store.entities.Paragraph;
 import com.codewithmosh.store.entities.Session;
@@ -13,6 +10,7 @@ import com.codewithmosh.store.exceptions.InvalidStateException;
 import com.codewithmosh.store.exceptions.ResourceNotFoundException;
 import com.codewithmosh.store.mappers.FeedbackMapper;
 import com.codewithmosh.store.mappers.ParagraphMapper;
+import com.codewithmosh.store.mappers.SessionMapper;
 import com.codewithmosh.store.mappers.VocabularyMapper;
 import com.codewithmosh.store.repositories.FeedbackRepository;
 import com.codewithmosh.store.repositories.ParagraphRepository;
@@ -38,6 +36,7 @@ public class VocabularyService {
     private final VocabularyMapper vocabularyMapper;
     private final ParagraphMapper paragraphMapper;
     private final FeedbackMapper feedbackMapper;
+    private final SessionMapper sessionMapper;
     private final VocabularyAIService vocabularyAIService;
 
     @Autowired
@@ -49,6 +48,7 @@ public class VocabularyService {
             VocabularyMapper vocabularyMapper,
             ParagraphMapper paragraphMapper,
             FeedbackMapper feedbackMapper,
+            SessionMapper sessionMapper,
             VocabularyAIService vocabularyAIService) {
         this.vocabularyRepository = vocabularyRepository;
         this.sessionRepository = sessionRepository;
@@ -57,11 +57,12 @@ public class VocabularyService {
         this.vocabularyMapper = vocabularyMapper;
         this.paragraphMapper = paragraphMapper;
         this.feedbackMapper = feedbackMapper;
+        this.sessionMapper = sessionMapper;
         this.vocabularyAIService = vocabularyAIService;
     }
 
     @Transactional
-    public void createSession(Long userId) {
+    public Session createSession(Long userId) {
         logger.info("Saving session for user ID: {}", userId);
 
         // Create a new session
@@ -69,6 +70,8 @@ public class VocabularyService {
         session.setStatus(SessionStatus.WORDS_GENERATED.name());
         session.setUserId(userId);
         sessionRepository.save(session);
+
+        return session;
     }
 
     @Transactional
@@ -86,7 +89,7 @@ public class VocabularyService {
         session.setTopic(topic);
         session = sessionRepository.save(session);
 
-        for (VocabularyItemDto itemDto : vocabularyHuntDto.getData()) {
+        for (VocabularyDto itemDto : vocabularyHuntDto.getData()) {
             // Use mapper to create entity
             Vocabulary vocabularyEntity = vocabularyMapper.toEntity(itemDto);
 
@@ -214,5 +217,46 @@ public class VocabularyService {
         sessionRepository.save(session);
 
         return feedbackMapper.toDto(feedback);
+    }
+
+    public GetSessionsDto getAllSessions(Long userId) {
+        List<Session> sessions = sessionRepository.findAllByUserIdAndTopicIsNotNullOrderByCreatedAtDesc(userId);
+        return sessionMapper.toListDto(sessions);
+    }
+
+    public GetAllVocabularyDto getAllVocabularies(Long userId) {
+        List<Vocabulary> vocabularies = vocabularyRepository.findAllByUserId(userId);
+        return vocabularyMapper.toListDto(vocabularies);
+    }
+
+    @Transactional(readOnly = true)
+    public SessionDetailDto getSessionDetails(Long sessionId) {
+        logger.info("Retrieving complete session details for session ID: {}", sessionId);
+
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Session not found with ID: " + sessionId));
+
+        SessionDetailDto detailDto = new SessionDetailDto();
+        detailDto.setTopic(session.getTopic());
+
+        List<Vocabulary> vocabularies = vocabularyRepository.findAllBySessionId(sessionId);
+        detailDto.setVocabularies(vocabularies.stream()
+                .map(vocabularyMapper::toDto)
+                .collect(Collectors.toList()));
+        detailDto.setLevel(vocabularies.getFirst().getLevel());
+
+        Paragraph paragraph = paragraphRepository.findBySessionId(sessionId).orElse(null);
+        if (paragraph != null) {
+            detailDto.setParagraph(paragraph.getContent());
+        }
+
+        Feedback feedback = feedbackRepository.findBySessionId(sessionId).orElse(null);
+        if (feedback != null) {
+            detailDto.setWriting(feedback.getUserWriting());
+            detailDto.setFeedback(feedback.getFeedback());
+            detailDto.setImprovedAnswer(feedback.getImprovedAnswer());
+        }
+
+        return detailDto;
     }
 }
