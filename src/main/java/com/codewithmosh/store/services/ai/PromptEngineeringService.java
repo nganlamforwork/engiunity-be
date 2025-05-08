@@ -31,7 +31,7 @@ public class PromptEngineeringService {
     @Value("${openai.model:gpt-3.5-turbo}")
     private String defaultModel;
 
-    @Value("${openai.maxTokens:3000}")
+    @Value("${openai.maxTokens:1000}")
     private Integer defaultMaxTokens;
 
     @Value("${openai.temperature:0.4}")
