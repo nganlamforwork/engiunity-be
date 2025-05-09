@@ -2,7 +2,7 @@
  * Author: lamlevungan
  * Date: 28/04/2025
  **/
-package com.codewithmosh.store.dtos.scoring.writing;
+package com.codewithmosh.store.dtos.writing.scoring;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

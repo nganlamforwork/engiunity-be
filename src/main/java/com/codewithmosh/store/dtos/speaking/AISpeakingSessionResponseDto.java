@@ -4,11 +4,10 @@
  **/
 package com.codewithmosh.store.dtos.speaking;
 
+import com.codewithmosh.store.dtos.ai.ResponseDTO;
+import com.codewithmosh.store.dtos.ai.TokenUsageDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -20,7 +19,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AISpeakingSessionResponseDto {
+@ToString
+public class AISpeakingSessionResponseDto  implements ResponseDTO {
     @JsonProperty("questions")
-    private List<AIQuestionDto> questions;
+    private List<SpeakingQuestionDto> questions;
+
+    @JsonProperty("model")
+    private String model;
+
+    @JsonProperty("usage")
+    private TokenUsageDTO usage;
 }

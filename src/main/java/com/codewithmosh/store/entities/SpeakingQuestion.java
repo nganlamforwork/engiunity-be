@@ -4,11 +4,9 @@
  **/
 package com.codewithmosh.store.entities;
 
+import com.codewithmosh.store.entities.enums.SpeakingPart;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
@@ -17,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class SpeakingQuestion {
 
     @Id
@@ -24,7 +23,7 @@ public class SpeakingQuestion {
     private Long id;
 
     @Column(name = "part", nullable = false)
-    private Integer part;
+    private SpeakingPart part;
 
     @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     private String text;

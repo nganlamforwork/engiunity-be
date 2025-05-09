@@ -15,15 +15,15 @@ public enum SpeakingPart {
     /**
      * Part 1 only - Introduction and interview
      */
-    PART1("Part 1"),
+    PART_1("Part 1"),
     /**
      * Part 2 only - Individual long turn (cue card)
      */
-    PART2("Part 2"),
+    PART_2("Part 2"),
     /**
      * Part 3 only - Two-way discussion
      */
-    PART3("Part 3");
+    PART_3("Part 3");
     private final String displayName;
 
     SpeakingPart(String displayName) {

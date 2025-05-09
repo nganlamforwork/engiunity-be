@@ -5,17 +5,19 @@
 package com.codewithmosh.store.controllers;
 
 import com.codewithmosh.store.dtos.speaking.CreateSpeakingSessionRequest;
+import com.codewithmosh.store.dtos.speaking.SpeakingQuestionDto;
 import com.codewithmosh.store.dtos.speaking.SpeakingSessionDto;
+import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.codewithmosh.store.services.SpeakingSessionService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -29,11 +31,39 @@ public class SpeakingSessionController {
      */
     @PostMapping
     public ResponseEntity<SpeakingSessionDto> createSession(
-            @Valid @RequestBody CreateSpeakingSessionRequest request) {
+            @Valid @RequestBody CreateSpeakingSessionRequest request,
+        UriComponentsBuilder uriBuilder) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
 
         SpeakingSessionDto response = speakingSessionService.createSession(request, userId);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        URI location = uriBuilder
+                .path("/speaking/sessions/{id}")
+                .buildAndExpand(response.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SpeakingSessionDto> getSession(@PathVariable Long id) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(speakingSessionService.getSession(id));
+    }
+
+    @GetMapping("/{id}/questions")
+    public ResponseEntity<List<SpeakingQuestionDto>> getQuestionsWithFilters(
+            @PathVariable Long id,
+            @RequestParam(required = false) String part,
+            @RequestParam(required = false) Long questionId,
+            @RequestParam(required = false) Integer order
+    ) {
+        List<SpeakingQuestionDto> result = speakingSessionService.getQuestionsByFilters(
+                id, SpeakingPart.fromString(part), questionId, order
+        );
+        return ResponseEntity.ok(result);
+    }
+
+
 }

@@ -67,6 +67,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    // Speaking sesion not found
+    @ExceptionHandler(SpeakingSessionNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleSpeakingSessionNotFoundException(SpeakingSessionNotFoundException exception) {
+        var error = new HashMap<String, String>();
+        error.put("error", "Speaking session not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     // Json parsing from form data
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<Map<String, String>> handleJsonProcessingException(JsonProcessingException exception) {

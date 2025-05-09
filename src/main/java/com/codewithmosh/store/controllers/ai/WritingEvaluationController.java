@@ -4,8 +4,8 @@
  **/
 package com.codewithmosh.store.controllers.ai;
 
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDto;
-import com.codewithmosh.store.services.WritingEvaluationService;
+import com.codewithmosh.store.dtos.writing.scoring.WritingEvaluationDto;
+import com.codewithmosh.store.services.WritingAIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +19,11 @@ import java.util.Map;
 @RequestMapping("/api/writing")
 public class WritingEvaluationController {
 
-    private final WritingEvaluationService writingEvaluationService;
+    private final WritingAIService writingAIService;
 
     @Autowired
-    public WritingEvaluationController(WritingEvaluationService writingEvaluationService) {
-        this.writingEvaluationService = writingEvaluationService;
+    public WritingEvaluationController(WritingAIService writingAIService) {
+        this.writingAIService = writingAIService;
     }
 
     @PostMapping("/evaluate")
@@ -31,7 +31,7 @@ public class WritingEvaluationController {
         String writingSample = request.get("writingSample");
         String taskDescription = request.get("taskDescription");
 
-        WritingEvaluationDto evaluation = writingEvaluationService.evaluateWriting(writingSample, taskDescription);
+        WritingEvaluationDto evaluation = writingAIService.evaluateWriting(writingSample, taskDescription);
 
         return ResponseEntity.ok(evaluation);
     }
@@ -43,7 +43,7 @@ public class WritingEvaluationController {
         String customSchema = (String) request.get("schema");
 
         // Use Object.class as we don't know the exact type at compile time
-        Object evaluation = writingEvaluationService.evaluateWritingWithCustomSchema(
+        Object evaluation = writingAIService.evaluateWritingWithCustomSchema(
                 writingSample, taskDescription, customSchema, Object.class);
 
         return ResponseEntity.ok(evaluation);
