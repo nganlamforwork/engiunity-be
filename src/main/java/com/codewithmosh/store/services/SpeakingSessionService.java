@@ -4,26 +4,30 @@
  **/
 package com.codewithmosh.store.services;
 
-import com.codewithmosh.store.dtos.speaking.AISpeakingSessionResponseDto;
-import com.codewithmosh.store.dtos.speaking.CreateSpeakingSessionRequest;
-import com.codewithmosh.store.dtos.speaking.SpeakingQuestionDto;
-import com.codewithmosh.store.dtos.speaking.SpeakingSessionDto;
+import com.codewithmosh.store.dtos.speaking.*;
 import com.codewithmosh.store.entities.SpeakingQuestion;
+import com.codewithmosh.store.entities.SpeakingResponse;
 import com.codewithmosh.store.entities.SpeakingSession;
 import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.codewithmosh.store.entities.enums.SpeakingSessionStatus;
+import com.codewithmosh.store.exceptions.InvalidOperationException;
+import com.codewithmosh.store.exceptions.ResourceNotFoundException;
 import com.codewithmosh.store.exceptions.SpeakingSessionNotFoundException;
 import com.codewithmosh.store.mapppers.SpeakingQuestionMapper;
+import com.codewithmosh.store.mapppers.SpeakingResponseMapper;
 import com.codewithmosh.store.mapppers.SpeakingSessionMapper;
 import com.codewithmosh.store.repositories.SpeakingQuestionRepository;
+import com.codewithmosh.store.repositories.SpeakingResponseRepository;
 import com.codewithmosh.store.repositories.SpeakingSessionRepository;
 import com.codewithmosh.store.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.common.lang.Nullable;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -31,11 +35,13 @@ import java.util.stream.Collectors;
 public class SpeakingSessionService {
     private final SpeakingSessionMapper speakingSessionMapper;
     private final SpeakingQuestionMapper speakingQuestionMapper;
+    private final SpeakingResponseMapper speakingResponseMapper;
     private final ObjectMapper objectMapper;
 
     private final UserRepository userRepository;
     private final SpeakingSessionRepository speakingSessionRepository;
     private final SpeakingQuestionRepository speakingQuestionRepository;
+    private final SpeakingResponseRepository speakingResponseRepository;
 
     private final SpeakingAIService aiService;
 
@@ -62,7 +68,7 @@ public class SpeakingSessionService {
         return speakingSessionMapper.toDto(savedSession);
     }
 
-    public SpeakingSessionDto getSession(Long id){
+    public SpeakingSessionDto getSession(Long id) {
         SpeakingSession session = speakingSessionRepository.findById(id).orElse(null);
         if (session == null) {
             throw new SpeakingSessionNotFoundException();
@@ -80,6 +86,7 @@ public class SpeakingSessionService {
                 .map(speakingQuestionMapper::toDto)
                 .collect(Collectors.toList());
     }
+
     public List<SpeakingQuestionDto> getQuestionsByFilters(
             Long sessionId,
             @Nullable SpeakingPart part,
@@ -94,5 +101,50 @@ public class SpeakingSessionService {
         return questions.stream()
                 .map(speakingQuestionMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public void updateSessionResponses(UpdateSpeakingSessionResponsesRequest request, Long sessionId) {
+        SpeakingSession session = speakingSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new SpeakingSessionNotFoundException());
+
+//        List<SpeakingResponse> updatedResponses = new ArrayList<>();
+
+        for (SpeakingResponseRequestDto responseRequest : request.getResponses()) {
+            Long questionId = responseRequest.getQuestionId();
+
+            // Verify the question exists and belongs to the session
+            SpeakingQuestion question = speakingQuestionRepository.findById(questionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
+
+            if (!question.getSpeakingSession().getId().equals(sessionId)) {
+                throw new InvalidOperationException("Question does not belong to the specified session");
+            }
+
+            // Check if a response already exists for this question
+            Optional<SpeakingResponse> existingResponse = speakingResponseRepository
+                    .findBySessionIdAndQuestionId(sessionId, questionId);
+
+            SpeakingResponse responseEntity;
+
+            if (existingResponse.isPresent()) {
+                // Update existing response
+                responseEntity = existingResponse.get();
+                responseEntity.setAudioUrl(responseRequest.getAudioUrl());
+                responseEntity.setTranscript(responseRequest.getTranscript());
+            } else {
+                // Create new response
+                responseEntity = speakingResponseMapper.toEntity(responseRequest);
+                responseEntity.setQuestion(question);
+                responseEntity.setSession(session);
+            }
+            speakingResponseRepository.save(responseEntity);
+        }
+
+        // Update session status if needed
+        if (session.getStatus() == SpeakingSessionStatus.CREATED) {
+            session.setStatus(SpeakingSessionStatus.IN_PROGRESS);
+            speakingSessionRepository.save(session);
+        }
+
     }
 }

@@ -18,20 +18,7 @@ public enum SpeakingSessionStatus {
      */
     CREATED("Created"),
 
-    /**
-     * User is working on Part 1
-     */
-    PART1_IN_PROGRESS("Part 1 In Progress"),
-
-    /**
-     * User is working on Part 2
-     */
-    PART2_IN_PROGRESS("Part 2 In Progress"),
-
-    /**
-     * User is working on Part 3
-     */
-    PART3_IN_PROGRESS("Part 3 In Progress"),
+    IN_PROGRESS("In Progress"),
 
     /**
      * All parts have been submitted

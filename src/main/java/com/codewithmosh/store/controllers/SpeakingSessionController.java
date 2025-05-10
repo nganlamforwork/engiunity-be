@@ -7,6 +7,7 @@ package com.codewithmosh.store.controllers;
 import com.codewithmosh.store.dtos.speaking.CreateSpeakingSessionRequest;
 import com.codewithmosh.store.dtos.speaking.SpeakingQuestionDto;
 import com.codewithmosh.store.dtos.speaking.SpeakingSessionDto;
+import com.codewithmosh.store.dtos.speaking.UpdateSpeakingSessionResponsesRequest;
 import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.codewithmosh.store.services.SpeakingSessionService;
 import jakarta.validation.Valid;
@@ -65,5 +66,13 @@ public class SpeakingSessionController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping("/{id}/responses")
+    public ResponseEntity<Void> updateSessionResponses(@PathVariable Long id,
+            @Valid @RequestBody UpdateSpeakingSessionResponsesRequest request) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
 
+        speakingSessionService.updateSessionResponses(request,id);
+        return ResponseEntity.noContent().build();
+    }
 }
