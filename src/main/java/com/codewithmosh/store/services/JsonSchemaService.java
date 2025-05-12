@@ -112,7 +112,7 @@ public class JsonSchemaService {
         instruction.append("\n1. Do not include any explanations or text outside of the JSON object.");
         instruction.append("\n2. The response must be valid JSON that can be parsed directly.");
         instruction.append("\n3. Keep text fields concise and to the point.");
-        instruction.append("\n4. For array items, limit to 3 items maximum per category to ensure the response fits within token limits.");
+        instruction.append("\n4. For array items, if there is no limit, limit to 3 items maximum per category to ensure the response fits within token limits. If there is a limit, must follow it");
         instruction.append("\n5. Ensure all required fields are included.");
         instruction.append("\n6. For the 'usage' field, leave it empty with placeholder values. It will be filled in by the system.");
 

@@ -4,7 +4,9 @@
  **/
 package com.codewithmosh.store.services;
 
+import com.codewithmosh.store.exceptions.ResourceNotFoundException;
 import com.codewithmosh.store.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.User;
@@ -28,6 +30,4 @@ public class UserService implements UserDetailsService {
         );
         return new User(user.getEmail(), user.getPassword(), Collections.emptyList());
     }
-
-
 }

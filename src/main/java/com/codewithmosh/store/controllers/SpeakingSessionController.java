@@ -69,9 +69,9 @@ public class SpeakingSessionController {
         SpeakingPart partEnum = null;
         if (part != null && !part.isBlank()) {
             try {
-                partEnum = SpeakingPart.valueOf(part.toUpperCase());
+                partEnum = SpeakingPart.fromString(part);
             } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build(); // Hoặc bạn có thể trả thông báo lỗi rõ ràng
+                return ResponseEntity.badRequest().build();
             }
         }
 
