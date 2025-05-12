@@ -22,4 +22,6 @@ public interface SpeakingResponseRepository extends JpaRepository<SpeakingRespon
  Optional<SpeakingResponse> findBySessionIdAndQuestionId(
          @Param("sessionId") Long sessionId,
          @Param("questionId") Long questionId);
+
+ List<SpeakingResponse> findBySessionIdAndQuestionIdIn(Long sessionId, List<Long> questionIds);
 }

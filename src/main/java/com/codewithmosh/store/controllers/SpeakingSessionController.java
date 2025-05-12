@@ -4,10 +4,8 @@
  **/
 package com.codewithmosh.store.controllers;
 
-import com.codewithmosh.store.dtos.speaking.CreateSpeakingSessionRequest;
-import com.codewithmosh.store.dtos.speaking.SpeakingQuestionDto;
-import com.codewithmosh.store.dtos.speaking.SpeakingSessionDto;
-import com.codewithmosh.store.dtos.speaking.UpdateSpeakingSessionResponsesRequest;
+import com.codewithmosh.store.dtos.speaking.*;
+import com.codewithmosh.store.dtos.speaking.evaluation.SpeakingEvaluationDto;
 import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.codewithmosh.store.services.SpeakingSessionService;
 import jakarta.validation.Valid;
@@ -74,5 +72,27 @@ public class SpeakingSessionController {
 
         speakingSessionService.updateSessionResponses(request,id);
         return ResponseEntity.noContent().build();
+    }
+    /**
+     * Score a speaking session
+     * @param request the scoring request
+     * @return the evaluation result
+     */
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<SpeakingEvaluationDto> scoreSession(@PathVariable Long id,
+            UriComponentsBuilder uriBuilder) {
+
+        // Verify user authentication
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+
+        SpeakingEvaluationDto evaluation = speakingSessionService.scoreSession(id);
+
+        URI location = uriBuilder
+                .path("/speaking/sessions/{id}/evaluation")
+                .buildAndExpand(id)
+                .toUri();
+
+        return ResponseEntity.created(location).body(evaluation);
     }
 }

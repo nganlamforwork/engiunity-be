@@ -26,10 +26,4 @@ public class SpeakingResponseDto {
 
     @JsonProperty("transcript")
     private String transcript;
-
-    @JsonProperty("createdAt")
-    private LocalDateTime createdAt;
-
-    @JsonProperty("updatedAt")
-    private LocalDateTime updatedAt;
 }

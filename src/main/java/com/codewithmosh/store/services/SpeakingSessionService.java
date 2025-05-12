@@ -5,6 +5,8 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.dtos.speaking.*;
+import com.codewithmosh.store.dtos.speaking.evaluation.SpeakingEvaluationDto;
+import com.codewithmosh.store.entities.SpeakingEvaluation;
 import com.codewithmosh.store.entities.SpeakingQuestion;
 import com.codewithmosh.store.entities.SpeakingResponse;
 import com.codewithmosh.store.entities.SpeakingSession;
@@ -16,17 +18,14 @@ import com.codewithmosh.store.exceptions.SpeakingSessionNotFoundException;
 import com.codewithmosh.store.mapppers.SpeakingQuestionMapper;
 import com.codewithmosh.store.mapppers.SpeakingResponseMapper;
 import com.codewithmosh.store.mapppers.SpeakingSessionMapper;
-import com.codewithmosh.store.repositories.SpeakingQuestionRepository;
-import com.codewithmosh.store.repositories.SpeakingResponseRepository;
-import com.codewithmosh.store.repositories.SpeakingSessionRepository;
-import com.codewithmosh.store.repositories.UserRepository;
+import com.codewithmosh.store.repositories.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.common.lang.Nullable;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,7 @@ public class SpeakingSessionService {
     private final SpeakingSessionRepository speakingSessionRepository;
     private final SpeakingQuestionRepository speakingQuestionRepository;
     private final SpeakingResponseRepository speakingResponseRepository;
+    private final SpeakingEvaluationRepository speakingEvaluationRepository;
 
     private final SpeakingAIService aiService;
 
@@ -98,10 +98,35 @@ public class SpeakingSessionService {
 
         List<SpeakingQuestion> questions = speakingQuestionRepository.findByFilters(session.getId(), part, questionId, order);
 
+        // Get all question IDs
+        List<Long> questionIds = questions.stream()
+                .map(SpeakingQuestion::getId)
+                .collect(Collectors.toList());
+
+        // Fetch all responses for these questions in a single query
+        List<SpeakingResponse> responses = speakingResponseRepository.findBySessionIdAndQuestionIdIn(sessionId, questionIds);
+
+        // Create a map of questionId -> response for efficient lookup
+        Map<Long, SpeakingResponse> responseMap = responses.stream()
+                .collect(Collectors.toMap(
+                        response -> response.getQuestion().getId(),
+                        response -> response
+                ));
+
+        // Map questions to DTOs and include responses where available
         return questions.stream()
-                .map(speakingQuestionMapper::toDto)
+                .map(question -> {
+                    SpeakingQuestionDto dto = speakingQuestionMapper.toDto(question);
+                    // If there's a response for this question, add it to the DTO
+                    SpeakingResponse response = responseMap.get(question.getId());
+                    if (response != null) {
+                        dto.setResponse(speakingResponseMapper.toDto(response));
+                    }
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
+
 
     public void updateSessionResponses(UpdateSpeakingSessionResponsesRequest request, Long sessionId) {
         SpeakingSession session = speakingSessionRepository.findById(sessionId)
@@ -147,4 +172,26 @@ public class SpeakingSessionService {
         }
 
     }
+    /**
+     * Score a speaking session
+     * @param id the session id to be scored
+     * @return the evaluation result
+     */
+    public SpeakingEvaluationDto scoreSession(Long id) {
+        List<SpeakingQuestionDto> questionsAndResponses = getQuestionsByFilters(id, null, null, null);
+
+        return aiService.evaluateSpeakingSession(questionsAndResponses);
+    }
+//    /**
+//     * Get an evaluation by session ID
+//     * @param sessionId the session ID
+//     * @return the evaluation result
+//     */
+//    public SpeakingEvaluationDto getEvaluationBySessionId(Long sessionId) {
+//        SpeakingEvaluation evaluation = speakingEvaluationRepository.findBySpeakingSessionId(sessionId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found for session: " + sessionId));
+//
+//        return speakingEvaluationMapper.toDto(evaluation);
+//    }
+
 }

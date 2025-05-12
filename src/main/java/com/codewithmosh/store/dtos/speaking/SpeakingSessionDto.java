@@ -25,5 +25,4 @@ public class SpeakingSessionDto {
     private String topic;
     private String notes;
     private SpeakingPart part;
-    private List<SpeakingQuestionDto> questions;
 }

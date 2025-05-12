@@ -37,8 +37,11 @@ public class SpeakingQuestionDto {
     @JsonProperty("followUp")
     private List<String> followUp;
 
+    private SpeakingResponseDto response;
+
     /**
      * Convert the subQuestions list to a single string with line breaks
+     *
      * @return the subQuestions as a single string
      */
     @JsonIgnore
@@ -51,6 +54,7 @@ public class SpeakingQuestionDto {
 
     /**
      * Convert the cueCard list to a single string with line breaks
+     *
      * @return the cueCard as a single string
      */
     @JsonIgnore
@@ -63,6 +67,7 @@ public class SpeakingQuestionDto {
 
     /**
      * Convert the followUp list to a single string with line breaks
+     *
      * @return the followUp as a single string
      */
     @JsonIgnore
