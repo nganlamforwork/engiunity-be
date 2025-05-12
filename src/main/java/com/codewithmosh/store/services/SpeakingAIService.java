@@ -8,8 +8,7 @@ import com.codewithmosh.store.dtos.ai.TokenUsageDTO;
 import com.codewithmosh.store.dtos.speaking.AISpeakingSessionResponseDto;
 import com.codewithmosh.store.dtos.speaking.SpeakingQuestionDto;
 import com.codewithmosh.store.dtos.speaking.SpeakingResponseDto;
-import com.codewithmosh.store.dtos.speaking.evaluation.SpeakingEvaluationDto;
-import com.codewithmosh.store.dtos.writing.scoring.WritingEvaluationDto;
+import com.codewithmosh.store.dtos.speaking.evaluation.EvaluationDto;
 import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -384,7 +383,7 @@ Return your response in valid JSON according to this schema:
      * @param questions List of SpeakingQuestionDto containing questions and responses
      * @return Evaluation results following the IELTS speaking assessment criteria
      */
-    public SpeakingEvaluationDto evaluateSpeakingSession(List<SpeakingQuestionDto> questions) {
+    public EvaluationDto evaluateSpeakingSession(List<SpeakingQuestionDto> questions) {
         try {
             logger.info("Evaluating speaking session with {} questions", questions.size());
 
@@ -448,7 +447,7 @@ Return your evaluation in valid JSON according to this schema:
             content = jsonValidatingService.ensureValidJson(content);
 
             // Parse the response into the DTO
-            SpeakingEvaluationDto evaluationDto = objectMapper.readValue(content, SpeakingEvaluationDto.class);
+            EvaluationDto evaluationDto = objectMapper.readValue(content, EvaluationDto.class);
 
             // Set the model used
             evaluationDto.setModel(defaultModel);

@@ -5,16 +5,18 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.dtos.speaking.*;
-import com.codewithmosh.store.dtos.speaking.evaluation.SpeakingEvaluationDto;
+import com.codewithmosh.store.dtos.speaking.evaluation.EvaluationDto;
 import com.codewithmosh.store.entities.SpeakingEvaluation;
 import com.codewithmosh.store.entities.SpeakingQuestion;
 import com.codewithmosh.store.entities.SpeakingResponse;
 import com.codewithmosh.store.entities.SpeakingSession;
+import com.codewithmosh.store.entities.enums.ScoreStatus;
 import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.codewithmosh.store.entities.enums.SpeakingSessionStatus;
 import com.codewithmosh.store.exceptions.InvalidOperationException;
 import com.codewithmosh.store.exceptions.ResourceNotFoundException;
 import com.codewithmosh.store.exceptions.SpeakingSessionNotFoundException;
+import com.codewithmosh.store.mapppers.SpeakingEvaluationMapper;
 import com.codewithmosh.store.mapppers.SpeakingQuestionMapper;
 import com.codewithmosh.store.mapppers.SpeakingResponseMapper;
 import com.codewithmosh.store.mapppers.SpeakingSessionMapper;
@@ -35,6 +37,7 @@ public class SpeakingSessionService {
     private final SpeakingSessionMapper speakingSessionMapper;
     private final SpeakingQuestionMapper speakingQuestionMapper;
     private final SpeakingResponseMapper speakingResponseMapper;
+    private final SpeakingEvaluationMapper speakingEvaluationMapper;
     private final ObjectMapper objectMapper;
 
     private final UserRepository userRepository;
@@ -175,23 +178,82 @@ public class SpeakingSessionService {
     /**
      * Score a speaking session
      * @param id the session id to be scored
+     * @return the evaluation result as DTO
+     */
+    /**
+     * Score a speaking session
+     * @param id the session id to be scored
      * @return the evaluation result
      */
     public SpeakingEvaluationDto scoreSession(Long id) {
+        // Check if session exists
+        SpeakingSession session = speakingSessionRepository.findById(id)
+                .orElseThrow(() -> new SpeakingSessionNotFoundException());
+
+        // Check if session is in a valid state for scoring
+        if (session.getStatus() != SpeakingSessionStatus.IN_PROGRESS) {
+            throw new InvalidOperationException("Session must be in IN_PROGRESS status to be scored");
+        }
+
+        // Get all questions and responses for the session
         List<SpeakingQuestionDto> questionsAndResponses = getQuestionsByFilters(id, null, null, null);
 
-        return aiService.evaluateSpeakingSession(questionsAndResponses);
+        // Check if evaluation already exists
+        Optional<SpeakingEvaluation> existingEvaluation =
+                speakingEvaluationRepository.findBySpeakingSessionId(id);
+
+        // If evaluation exists and is already scored, return it
+        if (existingEvaluation.isPresent() && existingEvaluation.get().getScoreStatus() == ScoreStatus.SCORED) {
+            return speakingEvaluationMapper.toDto(existingEvaluation.get());
+        }
+
+        // Call AI service to evaluate the session
+        EvaluationDto evaluationDto = aiService.evaluateSpeakingSession(questionsAndResponses);
+
+        // Create or update the evaluation entity
+        SpeakingEvaluation evaluation;
+        if (existingEvaluation.isPresent()) {
+            evaluation = existingEvaluation.get();
+        } else {
+            evaluation = new SpeakingEvaluation();
+            evaluation.setSpeakingSession(session);
+        }
+
+        // Extract the overall score from the evaluation DTO
+        Double overallScore = evaluationDto.getOverview().getTotalScore();
+
+        // Convert the evaluation DTO to a Map for storage
+        try {
+            Map<String, Object> scoreDetail = objectMapper.convertValue(evaluationDto, Map.class);
+
+            // Update the evaluation entity
+            evaluation.setScore(overallScore);
+            evaluation.setScoreDetail(scoreDetail);
+            evaluation.setScoreStatus(ScoreStatus.SCORED);
+
+            // Update session status
+            session.setStatus(SpeakingSessionStatus.SCORED);
+            speakingSessionRepository.save(session);
+
+            // Save the evaluation
+            SpeakingEvaluation savedEvaluation = speakingEvaluationRepository.save(evaluation);
+
+            // Map to DTO and return
+            return speakingEvaluationMapper.toDto(savedEvaluation);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to convert evaluation to JSON: " + e.getMessage(), e);
+        }
     }
-//    /**
-//     * Get an evaluation by session ID
-//     * @param sessionId the session ID
-//     * @return the evaluation result
-//     */
-//    public SpeakingEvaluationDto getEvaluationBySessionId(Long sessionId) {
-//        SpeakingEvaluation evaluation = speakingEvaluationRepository.findBySpeakingSessionId(sessionId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found for session: " + sessionId));
-//
-//        return speakingEvaluationMapper.toDto(evaluation);
-//    }
+    /**
+     * Get an evaluation by session ID
+     * @param sessionId the session ID
+     * @return the evaluation result
+     */
+    public SpeakingEvaluationDto getEvaluationBySessionId(Long sessionId) {
+        SpeakingEvaluation evaluation = speakingEvaluationRepository.findBySpeakingSessionId(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found for session: " + sessionId));
+
+        return speakingEvaluationMapper.toDto(evaluation);
+    }
 
 }

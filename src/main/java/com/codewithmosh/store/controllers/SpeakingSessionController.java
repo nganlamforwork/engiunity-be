@@ -5,7 +5,6 @@
 package com.codewithmosh.store.controllers;
 
 import com.codewithmosh.store.dtos.speaking.*;
-import com.codewithmosh.store.dtos.speaking.evaluation.SpeakingEvaluationDto;
 import com.codewithmosh.store.entities.enums.SpeakingPart;
 import com.codewithmosh.store.services.SpeakingSessionService;
 import jakarta.validation.Valid;
@@ -94,5 +93,12 @@ public class SpeakingSessionController {
                 .toUri();
 
         return ResponseEntity.created(location).body(evaluation);
+    }
+
+    @GetMapping("/{id}/result")
+    public ResponseEntity<SpeakingEvaluationDto> getSessionResult(@PathVariable Long id) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(speakingSessionService.getEvaluationBySessionId(id)) ;
     }
 }

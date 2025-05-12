@@ -14,7 +14,7 @@ CREATE TABLE speaking_sessions
             ON DELETE CASCADE
 ) AUTO_INCREMENT = 1;
 
-CREATE TABLE questions
+CREATE TABLE speaking_questions
 (
     id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
     part                INT    NOT NULL,

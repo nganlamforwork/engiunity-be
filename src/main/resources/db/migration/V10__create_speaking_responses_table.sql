@@ -9,7 +9,7 @@ CREATE TABLE speaking_responses
     session_id  BIGINT   NOT NULL,
 
     CONSTRAINT fk_speaking_responses_question
-        FOREIGN KEY (question_id) REFERENCES questions (id)
+        FOREIGN KEY (question_id) REFERENCES speaking_questions (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_speaking_responses_session

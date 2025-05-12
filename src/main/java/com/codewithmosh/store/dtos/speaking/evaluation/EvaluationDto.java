@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpeakingEvaluationDto implements ResponseDTO {
+public class EvaluationDto implements ResponseDTO {
 
     @JsonProperty("overview")
     private OverviewDto overview;

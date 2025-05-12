@@ -10,7 +10,7 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "questions")
+@Table(name = "speaking_questions")
 @Data
 @Builder
 @NoArgsConstructor
