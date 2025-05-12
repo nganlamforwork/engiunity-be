@@ -63,11 +63,24 @@ public class SpeakingSessionController {
             @RequestParam(required = false) Long questionId,
             @RequestParam(required = false) Integer order
     ) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+
+        SpeakingPart partEnum = null;
+        if (part != null && !part.isBlank()) {
+            try {
+                partEnum = SpeakingPart.valueOf(part.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build(); // Hoặc bạn có thể trả thông báo lỗi rõ ràng
+            }
+        }
+
         List<SpeakingQuestionDto> result = speakingSessionService.getQuestionsByFilters(
-                id, SpeakingPart.fromString(part), questionId, order
+                id, partEnum, questionId, order, userId
         );
         return ResponseEntity.ok(result);
     }
+
 
     @PutMapping("/{id}/responses")
     public ResponseEntity<Void> updateSessionResponses(@PathVariable Long id,
@@ -75,7 +88,7 @@ public class SpeakingSessionController {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
 
-        speakingSessionService.updateSessionResponses(request,id);
+        speakingSessionService.updateSessionResponses(request,id, userId);
         return ResponseEntity.noContent().build();
     }
     /**
@@ -91,7 +104,7 @@ public class SpeakingSessionController {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
 
-        SpeakingEvaluationDto evaluation = speakingSessionService.scoreSession(id);
+        SpeakingEvaluationDto evaluation = speakingSessionService.scoreSession(id, userId);
 
         URI location = uriBuilder
                 .path("/speaking/sessions/{id}/evaluation")
@@ -105,6 +118,6 @@ public class SpeakingSessionController {
     public ResponseEntity<SpeakingEvaluationDto> getSessionResult(@PathVariable Long id) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
-        return ResponseEntity.ok(speakingSessionService.getEvaluationBySessionId(id)) ;
+        return ResponseEntity.ok(speakingSessionService.getEvaluationBySessionId(id, userId)) ;
     }
 }

@@ -73,20 +73,12 @@ public class SpeakingSessionService {
     }
 
     public SpeakingSessionDto getSession(Long id, Long userId) {
-        SpeakingSession session = speakingSessionRepository.findById(id).orElse(null);
-        if (session == null) {
-            throw new SpeakingSessionNotFoundException();
-        }
-
-        if (!session.getUserId().equals(userId)) {
-            throw new AccessDeniedException("You are not allowed to access this session.");
-        }
+        SpeakingSession session = getAuthorizedSession(id, userId);
         return speakingSessionMapper.toDto(session);
     }
 
-    public List<SpeakingQuestionDto> getQuestionsBySessionId(Long sessionId) {
-        SpeakingSession session = speakingSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new SpeakingSessionNotFoundException());
+    public List<SpeakingQuestionDto> getQuestionsBySessionId(Long sessionId, Long userId) {
+        SpeakingSession session = getAuthorizedSession(sessionId, userId);
 
         List<SpeakingQuestion> questions = speakingQuestionRepository.findBySpeakingSessionId(session.getId());
 
@@ -99,10 +91,10 @@ public class SpeakingSessionService {
             Long sessionId,
             @Nullable SpeakingPart part,
             @Nullable Long questionId,
-            @Nullable Integer order
+            @Nullable Integer order,
+            Long userId
     ) {
-        SpeakingSession session = speakingSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new SpeakingSessionNotFoundException());
+        SpeakingSession session = getAuthorizedSession(sessionId, userId);
 
         List<SpeakingQuestion> questions = speakingQuestionRepository.findByFilters(session.getId(), part, questionId, order);
 
@@ -136,9 +128,8 @@ public class SpeakingSessionService {
     }
 
 
-    public void updateSessionResponses(UpdateSpeakingSessionResponsesRequest request, Long sessionId) {
-        SpeakingSession session = speakingSessionRepository.findById(sessionId)
-                .orElseThrow(() -> new SpeakingSessionNotFoundException());
+    public void updateSessionResponses(UpdateSpeakingSessionResponsesRequest request, Long sessionId, Long userId) {
+        SpeakingSession session = getAuthorizedSession(sessionId, userId);
 
 //        List<SpeakingResponse> updatedResponses = new ArrayList<>();
 
@@ -190,10 +181,8 @@ public class SpeakingSessionService {
      * @param id the session id to be scored
      * @return the evaluation result
      */
-    public SpeakingEvaluationDto scoreSession(Long id) {
-        // Check if session exists
-        SpeakingSession session = speakingSessionRepository.findById(id)
-                .orElseThrow(() -> new SpeakingSessionNotFoundException());
+    public SpeakingEvaluationDto scoreSession(Long id, Long userId) {
+        SpeakingSession session = getAuthorizedSession(id, userId);
 
         // Check if session is in a valid state for scoring
         if (session.getStatus() != SpeakingSessionStatus.IN_PROGRESS) {
@@ -201,7 +190,7 @@ public class SpeakingSessionService {
         }
 
         // Get all questions and responses for the session
-        List<SpeakingQuestionDto> questionsAndResponses = getQuestionsByFilters(id, null, null, null);
+        List<SpeakingQuestionDto> questionsAndResponses = getQuestionsByFilters(id, null, null, null, userId);
 
         // Check if evaluation already exists
         Optional<SpeakingEvaluation> existingEvaluation =
@@ -254,7 +243,8 @@ public class SpeakingSessionService {
      * @param sessionId the session ID
      * @return the evaluation result
      */
-    public SpeakingEvaluationDto getEvaluationBySessionId(Long sessionId) {
+    public SpeakingEvaluationDto getEvaluationBySessionId(Long sessionId, Long userId) {
+        SpeakingSession session = getAuthorizedSession(sessionId, userId);
         SpeakingEvaluation evaluation = speakingEvaluationRepository.findBySpeakingSessionId(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found for session: " + sessionId));
 
@@ -267,6 +257,16 @@ public class SpeakingSessionService {
         return sessions.stream()
                 .map(speakingSessionMapper::toDto)
                 .collect(Collectors.toList());
+    }
+    private SpeakingSession getAuthorizedSession(Long sessionId, Long userId) {
+        SpeakingSession session = speakingSessionRepository.findById(sessionId)
+                .orElseThrow(SpeakingSessionNotFoundException::new);
+
+        if (!session.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You are not allowed to access this session.");
+        }
+
+        return session;
     }
 
 }
