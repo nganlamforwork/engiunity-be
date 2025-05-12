@@ -43,11 +43,17 @@ public class SpeakingSessionController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @GetMapping()
+    public ResponseEntity<List<SpeakingSessionDto>> getSessions() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(speakingSessionService.getSessions(userId));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<SpeakingSessionDto> getSession(@PathVariable Long id) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var userId = (Long) authentication.getPrincipal();
-        return ResponseEntity.ok(speakingSessionService.getSession(id));
+        return ResponseEntity.ok(speakingSessionService.getSession(id, userId));
     }
 
     @GetMapping("/{id}/questions")

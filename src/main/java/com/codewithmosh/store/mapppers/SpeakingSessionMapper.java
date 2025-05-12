@@ -29,5 +29,7 @@ public interface SpeakingSessionMapper {
      * @param session the entity
      * @return SpeakingSession DTO
      */
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "updatedAt", target = "updatedAt")
     SpeakingSessionDto toDto(SpeakingSession session);
 }

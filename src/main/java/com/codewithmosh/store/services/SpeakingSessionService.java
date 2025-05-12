@@ -24,6 +24,7 @@ import com.codewithmosh.store.repositories.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.common.lang.Nullable;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,10 +72,14 @@ public class SpeakingSessionService {
         return speakingSessionMapper.toDto(savedSession);
     }
 
-    public SpeakingSessionDto getSession(Long id) {
+    public SpeakingSessionDto getSession(Long id, Long userId) {
         SpeakingSession session = speakingSessionRepository.findById(id).orElse(null);
         if (session == null) {
             throw new SpeakingSessionNotFoundException();
+        }
+
+        if (!session.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You are not allowed to access this session.");
         }
         return speakingSessionMapper.toDto(session);
     }
@@ -254,6 +259,14 @@ public class SpeakingSessionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Evaluation not found for session: " + sessionId));
 
         return speakingEvaluationMapper.toDto(evaluation);
+    }
+
+    public List<SpeakingSessionDto> getSessions(Long userId) {
+        List<SpeakingSession> sessions = speakingSessionRepository.findByUserId(userId);
+
+        return sessions.stream()
+                .map(speakingSessionMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }

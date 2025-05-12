@@ -25,4 +25,6 @@ public class SpeakingSessionDto {
     private String topic;
     private String notes;
     private SpeakingPart part;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
