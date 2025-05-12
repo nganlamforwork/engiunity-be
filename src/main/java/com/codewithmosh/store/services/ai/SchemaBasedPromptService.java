@@ -2,10 +2,11 @@
  * Author: lamlevungan
  * Date: 28/04/2025
  **/
-package com.codewithmosh.store.services;
+package com.codewithmosh.store.services.ai;
 
 
 import com.codewithmosh.store.dtos.ai.UsageDTO;
+import com.codewithmosh.store.services.JsonSchemaService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

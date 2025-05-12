@@ -151,7 +151,7 @@
                 <configuration>
                     <url>jdbc:mysql://localhost:3306/enginuity?createDatabaseIfNotExist=true</url>
                     <user>root</user>
-                    <password>admin</password>
+                    <password>21042003</password>
                     <cleanDisabled>false</cleanDisabled>
                 </configuration>
             </plugin>

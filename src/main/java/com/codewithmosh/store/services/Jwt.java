@@ -4,7 +4,7 @@
  **/
 package com.codewithmosh.store.services;
 
-import com.codewithmosh.store.entities.Role;
+import com.codewithmosh.store.entities.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 

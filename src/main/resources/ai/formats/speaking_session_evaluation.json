@@ -1,0 +1,193 @@
+{
+  "type": "object",
+  "properties": {
+    "overview": {
+      "type": "object",
+      "properties": {
+        "totalScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "overallFeedback": {
+          "type": "string"
+        },
+        "overallImprovementSuggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "totalScore",
+        "overallFeedback",
+        "overallImprovementSuggestion"
+      ]
+    },
+    "fluency_and_coherence": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "feedback": {
+          "type": "string"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "excerpt": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "excerpt",
+              "comment"
+            ]
+          }
+        },
+        "improvementSuggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "score",
+        "feedback",
+        "examples",
+        "improvementSuggestion"
+      ]
+    },
+    "lexical_resource": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "feedback": {
+          "type": "string"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "excerpt": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "excerpt",
+              "comment"
+            ]
+          }
+        },
+        "improvementSuggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "score",
+        "feedback",
+        "examples",
+        "improvementSuggestion"
+      ]
+    },
+    "grammatical_range_and_accuracy": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "feedback": {
+          "type": "string"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "excerpt": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "excerpt",
+              "comment"
+            ]
+          }
+        },
+        "improvementSuggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "score",
+        "feedback",
+        "examples",
+        "improvementSuggestion"
+      ]
+    },
+    "pronunciation": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "feedback": {
+          "type": "string"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "excerpt": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "excerpt",
+              "comment"
+            ]
+          }
+        },
+        "improvementSuggestion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "score",
+        "feedback",
+        "examples",
+        "improvementSuggestion"
+      ]
+    }
+  },
+  "required": [
+    "overview",
+    "fluency_and_coherence",
+    "lexical_resource",
+    "grammatical_range_and_accuracy",
+    "pronunciation"
+  ]
+}

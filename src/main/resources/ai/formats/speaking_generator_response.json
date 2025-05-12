@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "part": {
+            "type": "string",
+            "enum": ["Part 1", "Part 2", "Part 3"]
+          },
+          "order": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "subQuestions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cueCard": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "followUp": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["part", "order", "text"]
+      }
+    }
+  },
+  "required": ["questions"]
+}

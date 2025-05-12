@@ -1,7 +1,7 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.cdn.BunnyCdnUploader;
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDto;
+import com.codewithmosh.store.dtos.writing.scoring.WritingEvaluationDto;
 import com.codewithmosh.store.dtos.writing.*;
 import com.codewithmosh.store.entities.WritingExercise;
 import com.codewithmosh.store.entities.WritingExerciseResponse;
@@ -34,7 +34,7 @@ public class WritingExerciseService {
     private final UserRepository userRepository;
     private final WritingExerciseMapper writingExerciseMapper;
     private final BunnyCdnUploader bunnyCdnUploader;
-    private final WritingEvaluationService writingEvaluationService;
+    private final WritingAIService writingAIService;
 
     private final ObjectMapper objectMapper;
 
@@ -189,7 +189,7 @@ public class WritingExerciseService {
             response.setTakeNumber(nextTakeNumber);
 
         }
-        WritingEvaluationDto result = writingEvaluationService.evaluateWriting(response.getContent(), exerciseOptional.get().getContent());
+        WritingEvaluationDto result = writingAIService.evaluateWriting(response.getContent(), exerciseOptional.get().getContent());
 
         // Set score & taken time
         response.setScore(result.getOverview().getTotalScore());

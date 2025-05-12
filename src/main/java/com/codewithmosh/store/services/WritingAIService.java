@@ -5,7 +5,7 @@
 package com.codewithmosh.store.services;
 
 import com.codewithmosh.store.dtos.ai.TokenUsageDTO;
-import com.codewithmosh.store.dtos.scoring.writing.WritingEvaluationDto;
+import com.codewithmosh.store.dtos.writing.scoring.WritingEvaluationDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class  WritingEvaluationService {
+public class WritingAIService {
 
-    private static final Logger logger = LoggerFactory.getLogger(WritingEvaluationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WritingAIService.class);
     private final OpenAiService openAiService;
     private final JsonSchemaService jsonSchemaService;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -158,7 +158,7 @@ public class  WritingEvaluationService {
             """;
 
     @Autowired
-    public WritingEvaluationService(OpenAiService openAiService, JsonSchemaService jsonSchemaService) {
+    public WritingAIService(OpenAiService openAiService, JsonSchemaService jsonSchemaService) {
         // Tạo OpenAiService với timeout tùy chỉnh
         this.openAiService = openAiService;
         this.jsonSchemaService = jsonSchemaService;
@@ -219,8 +219,6 @@ public class  WritingEvaluationService {
 
             // Get the response content
             String content = result.getChoices().get(0).getMessage().getContent();
-            System.out.println(content);
-
 
             // Extract JSON content if wrapped in markdown code blocks
             content = extractJsonContent(content);

@@ -1,5 +1,6 @@
 package com.codewithmosh.store.entities;
 
+import com.codewithmosh.store.entities.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

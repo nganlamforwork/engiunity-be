@@ -101,4 +101,9 @@ public class WritingExerciseController {
 
         return ResponseEntity.ok(latestNotScoredResponse);
     }
+
+//    @PostMapping("/{id}/sample-generator")
+//    public ResponseEntity<?> createSampleGenerator(@PathVariable Long id, @RequestBody SampleGeneratorRequest request){
+//
+//    }
 }
